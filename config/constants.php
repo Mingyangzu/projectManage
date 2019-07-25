@@ -1,0 +1,19 @@
+<?php
+    return [
+        'ADMIN'=>'admin',
+        'ADMIN_ROLE'=>'admin_role',
+        'COLLECTION_RECORDS'=>'collection_records',
+        'CONTRACT'=>'contract',
+        'CUSTOMER'=>'customer',
+        'POWER'=>'power',
+        'PROJECT'=>'project',
+        'PROJECT_CONTRACT'=>'project_contract',
+        'TYPE'=>'type',
+        'ROLE_POWER'=>'role_power',
+        'ROLE'=>'role',
+        'STEP'=>'step',
+        'MENU'=>'menu',
+        'MENU_LIST'=>'menu_list',
+        'EXPENDITURE'=>'expenditure',
+        'WAGES'=>'wages',
+    ];

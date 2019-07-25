@@ -1,0 +1,47 @@
+#show_hide_progress,#export_excel{
+    margin: auto 1% auto auto;
+    float: right;
+}
+
+.new_add{
+    display: none;
+}
+
+.form-control-feedback{
+    right: 10px;
+}
+
+body{
+    margin: 0 10px 0 10px;
+}
+
+#sub_page_num_span{
+    float: left;
+}
+
+#progress{
+    display: none;
+}
+
+#add_user,#show_hide_button,#export_demo,#export_excel_file {
+    width: 84px;
+}
+
+.staff_portrait{
+    line-height: 50%;
+}
+
+#hide_upload_files{
+    display: none;
+}
+
+#export_excel_file,#show_hide_button{
+    float: left;
+}
+
+.table tbody tr th {
+    border-top: 1px solid #333;
+}
+.table tbody tr td{
+    border-top: 1px solid #333;
+}
