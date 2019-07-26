@@ -3,9 +3,9 @@
 namespace App\Model;
 
 //客户
-class Customer extends Model {
+class Projects extends Model {
 
-    protected $table = 'customer';
+    protected $table = 'project';
     protected $primaryKey = 'id';
 
     const CREATED_AT = 'create_time';
@@ -23,8 +23,8 @@ class Customer extends Model {
     }
     
     
-    public function projectMany(){
-        return $this->hasMany('App\Model\Projects', 'customer_id', 'id');
+    public function contractMany(){
+        return $this->belongsTo('App\Model\Contract', 'project_id', 'id');
     }
     
 

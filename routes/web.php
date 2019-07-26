@@ -92,7 +92,12 @@ Route::post('add_wages','Admin\WagesController@add_wages')->name('add_wages');
 
 Route::group(['namespace' => 'Manage'], function(){
    Route::get('welcome','ManagesController@welcome')->name('welcome');
-   Route::get('manages', 'ManagesController@index')->name('manages'); 
+//   Route::get('manages', 'ManagesController@index')->name('manages'); 
+   
+   Route::get('contract','ContractController@index')->name('contract');
+   Route::get('customer_index','CustomerController@index')->name('customer');
+   
+   Route::get('customerlist', 'CustomerController@customerlist')->name('customerlist');
    
 });
 
