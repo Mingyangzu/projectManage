@@ -87,3 +87,12 @@ Route::get('wages_index','Admin\WagesController@wages_index')->name('wages_index
 Route::post('get_wages','Admin\WagesController@get_wages')->name('get_wages');
 Route::post('update_wages','Admin\WagesController@update_wages')->name('update_wages');
 Route::post('add_wages','Admin\WagesController@add_wages')->name('add_wages');
+
+//Route::get('manages', 'Manage\ManagesController@index')->name('manages'); 
+
+Route::group(['namespace' => 'Manage'], function(){
+   Route::get('welcome','ManagesController@welcome')->name('welcome');
+   Route::get('manages', 'ManagesController@index')->name('manages'); 
+   
+});
+
