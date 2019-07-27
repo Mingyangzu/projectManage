@@ -14,6 +14,7 @@
     use Illuminate\Http\Request;
     use App\Model\Customer as CustomerModel;
     use App\Model\Projects as ProjectsModel;
+    use App\Model\Contract as ContractModel;
     
     
     class CustomerController extends SecondController
@@ -28,6 +29,7 @@
 
         public function index(){
             $data['source'] = $this->customer_source;
+            $data['type'] = $this->customer_type;
             return view('Manage.customer',['title' => '客户列表', 'data' => json_encode($data)]);
         }
         
@@ -60,6 +62,104 @@
             $this->returnMsg['msg'] = 'success';
             return json_encode($this->returnMsg);
         }
+        
+        // 添加客户
+        public function addcustomer(Request $request){
+            if(!$request->isMethod('post')){
+                $this->returnMsg['code'] = 304;
+                $this->returnMsg['msg'] = '请求方式有误!';
+                return json_encode($this->returnMsg);
+            }
+            if(!$request->filled('username')){
+                $this->returnMsg['code'] = 304;
+                $this->returnMsg['msg'] = '客户名为必填项!';
+                return json_encode($this->returnMsg);
+            }
+            if(!$request->filled('phone') && !$request->filled('wechat') && !$request->filled('landline')){
+                $this->returnMsg['code'] = 304;
+                $this->returnMsg['msg'] = '联系电话、座机、微信号至少一个必填!';
+                return json_encode($this->returnMsg);
+            }
+            
+            $savedata = [];
+            $savedata['username'] = $request->username;
+            $request->filled('is_new_customer') && $savedata['is_new_customer'] = $request->is_new_customer;
+            $request->filled('type') && $savedata['type'] = $request->type;
+            $request->filled('source') && $savedata['source'] = $request->source;
+            $request->filled('company') && $savedata['company'] = $request->company;
+            $request->filled('address') && $savedata['address'] = $request->address;
+            $request->filled('phone') && $savedata['phone'] = $request->phone;
+            $request->filled('landline') && $savedata['landline'] = $request->landline;
+            $request->filled('wechat') && $savedata['wechat'] = $request->wechat;
+            $request->filled('position') && $savedata['position'] = $request->position;
+            $request->filled('remarks') && $savedata['remarks'] = $request->remarks;
+            
+            if($request->filled('editid')){
+                $savedata['last_time'] = time();
+                $msg = CustomerModel::where('id', $request->editid)->update($savedata);
+            }else{
+                $savedata['admin_id'] = $this->arr_login_user['id'];
+                $savedata['admin_name'] = $this->arr_login_user['name'];
+                $savedata['create_time'] = time();
+                $msg = CustomerModel::insert($savedata);
+            }
+            
+            if($msg == true){
+                $this->returnMsg['msg'] = '成功!';
+            }else{
+                $this->returnMsg['code'] = 500;
+                $this->returnMsg['msg'] = '失败!';
+            }
+            
+            return json_encode($this->returnMsg);
+            
+        }
+        
+         /**
+         * 获取客户信息
+         * @author tuomeikeji
+         * @time 2019-04-18
+         */
+        public function getcustomer()
+        {
+            $customer_table=config('constants.CUSTOMER');
+
+            $customer_id=trim(Input::get('customer_id'));
+            $arr_customer_where=[[$customer_table.'.id',$customer_id]];
+            $obj_customer=DB::table($customer_table)->where($arr_customer_where)->first();
+
+//            $obj_customer->show_status=$this->customer_status[$obj_customer->status];
+//            $obj_customer->show_source=$this->customer_source[$obj_customer->source];
+//            $obj_customer->show_type=$this->customer_type[$obj_customer->type];
+
+            if($obj_customer){
+                $obj_customer->create_time = date('Y-m-d H:i:s', $obj_customer->create_time);
+                $obj_customer->last_time = date('Y-m-d H:i:s', $obj_customer->last_time);
+                $this->returnMsg['msg'] = '成功!';
+                $this->returnMsg['data'] = $obj_customer;
+            }else{
+                $this->returnMsg['code'] = 500;
+                $this->returnMsg['msg'] = '获取失败!';
+            }
+            
+            return json_encode($this->returnMsg);
+        }
+        
+        // 获取用户所属项目
+        public function getcontract(Request $request){
+            if(!$request->filled('customer_id')){
+                $this->returnMsg['code'] = 304;
+                $this->returnMsg['msg'] = '提交参数有误!';
+                return json_encode($this->returnMsg);
+            }
+            
+//            $lists = ProjectModel::selectRaw('project.id, project.name,')
+//                    ->leftJoin('project', 'customer.id', '=', 'project.customer_id')
+//                    ->where($where);
+            return '';
+            
+        }
+
         
         
         /**
@@ -157,27 +257,7 @@
             return view('Admin.customer_index',$arr_var);
         }
 
-        /**
-         * 获取客户信息
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        public function get_customer()
-        {
-            $customer_table=config('constants.CUSTOMER');
-
-            $customer_id=trim(Input::get('customer_id'));
-            $arr_customer_where=[[$customer_table.'.id',$customer_id]];
-            $obj_customer=DB::table($customer_table)->where($arr_customer_where)->first();
-
-
-            $obj_customer->show_status=$this->customer_status[$obj_customer->status];
-            $obj_customer->show_source=$this->customer_source[$obj_customer->source];
-            $obj_customer->show_type=$this->customer_type[$obj_customer->type];
-
-            return $obj_customer==NULL ? 0 : json_encode($obj_customer);
-        }
-
+       
         /**
          *更新客户信息
          * @author tuomeikeji
