@@ -8,36 +8,56 @@
 </fieldset>
 
 <div class="demoTable">
-    <form class="layui-form" action="" onsubmit="return false;">
+    <form class="layui-form layui-form-item" action="" onsubmit="return false;">
         <div class="layui-inline">
-            <input class="layui-input" name="username" id="demoReload" placeholder="客户名" >
+            <input class="layui-input" name="name" id="demoReload" placeholder="项目名" >
         </div>
         <div class="layui-inline">
-            <input class="layui-input" name="company" id="demoReload" placeholder="公司名">
+            <input class="layui-input" name="customer_name" id="demoReload" placeholder="客户名">
+        </div>
+        <!--        <div class="layui-inline">
+                    <input class="layui-input" name="phone" id="demoReload" placeholder="联系电话">
+                </div>-->
+        <div class="layui-inline">
+            <input class="layui-input" name="admin_name" id="demoReload" placeholder="业务员">
         </div>
         <div class="layui-inline">
-            <input class="layui-input" name="phone" id="demoReload" placeholder="联系电话" >
-        </div>
-        <div class="layui-inline">
-            <select name="source" class="layui-input" >
-                <option value="">来源</option>
-                <?php foreach (json_decode($data)->source as $k => $v) { ?>
+            <select name="type_id" class="layui-input" >
+                <option value="">项目类型</option>
+                <?php foreach (json_decode($data)->type as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
                 <?php } ?>
             </select>
         </div>
+        <div class="layui-input-inline">
+            <select name="status" class="layui-input" >
+                <option value="">项目进度</option>
+                <?php foreach (json_decode($data)->status as $key => $val) { ?>
+                    <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        <div class="layui-input-inline">
+            <select name="payment_status" class="layui-input" >
+                <option value="">财务状态</option>
+                <?php foreach (json_decode($data)->pay_status as $key => $val) { ?>
+                    <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                <?php } ?>
+            </select>
+        </div>
         <div class="layui-inline">
-            <input class="layui-input" name="create_time" id="formdate" placeholder="创建时间" >
+            <input class="layui-input" name="deliver_date" id="formdate" placeholder="交付日期" >
         </div>
         <button class="layui-btn" data-type="reload" lay-submit lay-filter="formDemo">搜索</button>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <button class="layui-btn" data-type="reload" id="addCustomer">添加客户</button>
+        <button class="layui-btn" data-type="reload" id="addCustomer">添加项目</button>
     </form>
 </div>
 
 <table id="demo" lay-filter="test"></table>
 
 <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="addnote">添加记录</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
@@ -58,81 +78,87 @@
         <input type='hidden' name='editid'>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">客户名</label>
-            <div class="layui-input-inline" >
-                <input class="layui-input" lay-verify="required" name="username" placeholder="" >
+            <label class="layui-form-label">项目名</label>
+            <div class="layui-input-block">
+                <input class="layui-input" lay-verify="required" name="name" placeholder="">
             </div>
+        </div>        
 
-            <label class="layui-form-label">老客户</label>
-            <div class="layui-input-inline" style='border: 1px solid #e6e6e6;height: 36px;'>
-                <input  type="radio" name="is_new_customer" value="0" title="否" checked>
-                <input type="radio" name="is_new_customer" value="1" title="是">
-            </div>
-        </div>
-
-        <div class="layui-form-item" >
-            <label class="layui-form-label">类型</label>
+        <div class="layui-form-item"> 
+            <label class="layui-form-label">客户</label>
             <div class="layui-input-inline">
-                <select name="type" class="layui-input" >
-                    <option value="">类型</option>
-                    <?php foreach (json_decode($data)->type as $key => $val) { ?>
+                <select lay-verify="required" name="customer_id" lay-verify="required" class="layui-input" >
+                    <option value="">客户</option>
+                    <?php foreach (json_decode($data)->customer as $key => $val) { ?>
                         <option value="<?php echo $key ?>"><?php echo $val ?></option>
                     <?php } ?>
                 </select>
             </div>
-
-            <label class="layui-form-label">来源</label>
-            <div class="layui-input-inline">
-                <select name="source" class="layui-input" >
-                    <option value="">未知</option>
-                    <?php foreach (json_decode($data)->source as $k => $v) { ?>
-                        <option value="<?php echo $k ?>"><?php echo $v ?></option>
+            
+            <label class="layui-form-label">指派业务员</label>
+            <div class="layui-input-inline">  
+                <select name="admin_id" lay-verify="required" class="layui-input" >
+                    <option value="">业务员</option>
+                    <?php foreach (json_decode($data)->adminer as $key => $val) { ?>
+                        <option value="<?php echo $key ?>"><?php echo $val ?></option>
                     <?php } ?>
                 </select>
             </div>
         </div>
 
         <div class="layui-form-item">
-            <label class="layui-form-label">公司名</label>
-            <div class="layui-input-block">
-                <input class="layui-input" name="company" placeholder="">
-            </div>
-        </div>        
-
-        <div class="layui-form-item"> 
-            <label class="layui-form-label">公司地址</label>
-            <div class="layui-input-block">
-                <input class="layui-input" name="address" id="demoReload" placeholder="" >
-            </div>
-        </div>
-
-        <div class="layui-form-item"  style=''>
-            <label class="layui-form-label">联系电话</label>
+            <label class="layui-form-label">项目类型</label>
             <div class="layui-input-inline">
-                <input class="layui-input" lay-verify="required|phone" name="phone" id="demoReload" placeholder="" >
+                <select lay-verify="required" name="type_id" class="layui-input" >
+                    <option value="">类型</option>
+                    <?php foreach (json_decode($data)->type as $key => $val) { ?>
+                        <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                    <?php } ?>
+                </select>
             </div>
-            <label class="layui-form-label">座机</label>
+            <label class="layui-form-label">项目状态</label>
             <div class="layui-input-inline">
-                <input class="layui-input" name="landline" id="demoReload" placeholder="" >
+                <select name="status" lay-verify="required"  class="layui-input" >
+                    <option value="">项目状态</option>
+                    <?php foreach (json_decode($data)->status as $key => $val) { ?>
+                        <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                    <?php } ?>
+                </select>
             </div>
         </div>
 
         <div class="layui-form-item" >
-            <label class="layui-form-label">微信号</label>
+            <label class="layui-form-label">财务状态</label>
             <div class="layui-input-inline">
-                <input class="layui-input" name="wechat" id="demoReload" placeholder="" >
-            </div>
-
-            <label class="layui-form-label">职位</label>
-            <div class="layui-input-inline">
-                <input class="layui-input" name="position" id="demoReload" placeholder="" >
+                <select name="payment_status" lay-verify="required" class="layui-input" >
+                    <option value="">财务状态</option>
+                    <?php foreach (json_decode($data)->pay_status as $key => $val) { ?>
+                        <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                    <?php } ?>
+                </select>
             </div>
         </div>
 
-        <div class="layui-form-item detailevent" style='display:none'> 
-            <label class="layui-form-label">录入人</label>
+        <div class="layui-form-item"> 
+            <label class="layui-form-label">开发日期</label>
+            <div class="layui-input-inline">
+                <input class="layui-input formdate" name="develop_date" id="developdate" placeholder="" >
+            </div>
+            <label class="layui-form-label">交付日期</label>
             <div class="layui-input-inline">     
-                <input class="layui-input" name="adminer" id="demoReload" placeholder="" >
+                <input class="layui-input formdate" name="deliver_date" id="deliverdate" placeholder="" >
+            </div>
+        </div> 
+
+        <div class="layui-form-item"> 
+            <div class="">
+                <textarea name="note" placeholder="需求描述" class="layui-textarea"></textarea>
+            </div>
+        </div>  
+
+        <div class="layui-form-item"> 
+            <div class="">
+                <textarea name="remarks" placeholder="项目说明" class="layui-textarea"></textarea>
             </div>
         </div> 
 
@@ -145,13 +171,7 @@
             <div class="layui-input-inline">     
                 <input class="layui-input" name="lasttime" id="demoReload" placeholder="" >
             </div>
-        </div> 
-
-        <div class="layui-form-item"> 
-            <div class="">
-                <textarea name="remarks" placeholder="备注信息" class="layui-textarea"></textarea>
-            </div>
-        </div>   
+        </div>
 
         <div class="layui-form-item  editevent">
             <div class="layui-input-block">
@@ -162,52 +182,49 @@
     </form>
 </div>
 
-
 <ul class="layui-timeline" id='timelinebox' style='display: none; margin: 10px 20px;'></ul>
-
 
 <script>
     layui.use(['table', 'form', 'laydate', 'jquery'], function () {
         var table = layui.table, $ = layui.jquery, form = layui.form, laydate = layui.laydate;
         var sysdata = <?php echo $data ?>;
-        var sources = sysdata['source'];
 
         //第一个实例
         table.render({
             elem: '#demo'
-            , id: 'customertable'
-            , url: '/customerlist' //数据接口
+            , id: 'projecttable'
+            , url: '/projectlist' //数据接口
             , page: true //开启分页
             , cellMinWidth: 60
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
-                    , {field: 'username', title: '客户名', width: 80}
-                    , {field: 'company', title: '公司名', }
-                    , {field: 'position', title: '职位', width: 100}
-                    , {field: 'type', title: '类型', templet: '#types', width: 60}
-                    , {field: 'phone', title: '联系方式', width: 130}
-                    , {field: 'total', title: '项目数', width: 80, sort: true, templet: function (d) {
+                    , {field: 'name', title: '项目名', width: 150}
+                    , {field: 'customer_name', title: '客户名', width: 100}
+                    , {field: 'admin_name', title: '业务员', width: 100}
+                    , {field: 'total', title: '沟通记录数', width: 100, templet: function (d) {
                             if (d.total > 0) {
                                 return '<a class="layui-btn layui-btn-xs" lay-event="project"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>';
                             } else {
                                 return 0;
                             }
                         }}
-                    , {field: 'is_new_customer', title: '老客户', templet: function (d) {
-                            return d.is_new_customer == 1 ? '是' : '否';
-                        }, width: 80}
-                    , {field: 'source', title: '来源', templet: function (d) {
-                            return  sources[d.source];
-                        }, width: 80}
-                    , {field: 'create_time', title: '创建时间', width: 120}
-                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 160}
+                    , {field: 'type_id', title: '类型', templet: '#types', width: 80, templet: function (d) {
+                            return sysdata['type'][d.type_id];
+                        }}
+                    , {field: 'status', title: '项目状态', width: 100, templet: function (d) {
+                            return sysdata['status'][d.status];
+                        }}
+                    , {field: 'payment_status', title: '财务状态', width: 100, templet: function (d) {
+                            return sysdata['pay_status'][d.payment_status];
+                        }}
+                    , {field: 'develop_date', title: '开发日期', width: 120}
+                    , {field: 'deliver_date', title: '交付日期', width: 120}
+                    , {field: 'surplus', title: '剩余天数', width: 100}
+                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 230}
                 ]]
             , response: {
-//                statusName: 'status', //规定数据状态的字段名称，默认：code
                 statusCode: 200 //规定成功的状态码，默认：0
-//                , msgName: 'hint' //规定状态信息的字段名称，默认：msg
                 , countName: 'total' //规定数据总数的字段名称，默认：count
-//                , dataName: 'rows' //规定数据列表的字段名称，默认：data
             }
         });
 
@@ -215,12 +232,18 @@
             elem: '#formdate' //指定元素
             , range: '@'
         });
+        lay('.formdate').each(function(){
+    laydate.render({
+      elem: this
+      ,trigger: 'click'
+    });
+  });
 
 
         //监听提交
         form.on('submit(formDemo)', function (data) {
 //            layer.msg(JSON.stringify(data.field));
-            table.reload('customertable', {
+            table.reload('projecttable', {
                 where: data.field,
                 page: {
                     curr: 1,
@@ -237,7 +260,7 @@
                     $('.editevent').css({display: 'block'});
                     var index = layer.open({
                         type: 1,
-                        title: "客户信息编辑",
+                        title: "项目编辑",
                         area: ['60%', '80%'],
                         shadeClose: true,
                         shade: 0,
@@ -254,7 +277,7 @@
                     $('.editevent').css({display: 'none'});
                     var index = layer.open({
                         type: 1,
-                        title: "客户详情信息",
+                        title: "项目详情",
                         area: ['60%', '80%'],
                         shadeClose: true,
                         shade: 0,
@@ -264,11 +287,11 @@
                         }
                     });
                     break;
-                case 'project':
+                case 'addnote':
                     getInfomsg(obj.data.id, '/getcontract');
                     var index = layer.open({
                         type: 1,
-                        title: "合作项目",
+                        title: "添加记录",
                         area: ['60%', '80%'],
                         shadeClose: true,
                         shade: 0,
@@ -281,7 +304,6 @@
                 case 'del':
                     console.log(obj.data);
                     break;
-
             }
         });
 
@@ -301,7 +323,6 @@
                     if (res.code == 200) {
                         if (url == '/getcontract') {
                             console.log(res);
-                            timelineContent(res.data);
                         } else {
                             formval(res.data);
                         }
@@ -335,6 +356,7 @@
             });
         }
 
+
         var timelineContent = function (data) {
             var str = ''
             for (var i in data) {
@@ -360,13 +382,14 @@
             return str;
         }
 
+
         $('#addCustomer').click(function () {
             formval({});
             $('.detailevent').css({display: 'none'});
             $('.editevent').css({display: 'block'});
             var index = layer.open({
                 type: 1,
-                title: "客户信息编辑",
+                title: "项目添加",
                 area: ['60%', '80%'],
                 shadeClose: true,
                 shade: 0,
@@ -400,7 +423,7 @@
                         layer.msg("成功", {
                             icon: 1
                         });
-                        table.reload('customertable', {});
+                        table.reload('projecttable', {});
                     } else {
                         layer.msg(res.msg, {
                             icon: 5

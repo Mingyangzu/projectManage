@@ -102,5 +102,11 @@ Route::group(['namespace' => 'Manage'], function(){
    Route::get('getcustomer', 'CustomerController@getcustomer')->name('getcustomer');
    Route::get('getcontract', 'CustomerController@getcontract')->name('getcontract');
    
+   Route::get('project_index','ProjectController@index')->name('project');
+   Route::get('projectlist','ProjectController@projectlist')->name('projectlist');
+   Route::post('addproject', 'ProjectController@addproject')->name('addproject');
+   Route::get('getproject', 'ProjectController@getproject')->name('getproject');
+   
+   
 });
 

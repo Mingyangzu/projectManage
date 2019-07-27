@@ -153,11 +153,21 @@
                 return json_encode($this->returnMsg);
             }
             
-//            $lists = ProjectModel::selectRaw('project.id, project.name,')
-//                    ->leftJoin('project', 'customer.id', '=', 'project.customer_id')
-//                    ->where($where);
-            return '';
+            $lists = ProjectsModel::selectRaw('project.id, project.name, project.status, project.admin_name, project.deliver_date, project.create_time, project.remarks, type.name type_id')
+                    ->leftJoin('type', 'project.type_id', '=', 'type.id')
+                    ->where('project.customer_id', $request->customer_id)
+                    ->get();
             
+            if($lists){
+                foreach($lists as &$v){
+                    $v->status = $this->contract_status[$v->status];
+//                    $v->create_time = explode(' ', $v->create_time)[0];
+                }
+            }
+            
+            $this->returnMsg['data'] = $lists;
+            $this->returnMsg['msg'] = 'success';
+            return $this->returnMsg;
         }
 
         
