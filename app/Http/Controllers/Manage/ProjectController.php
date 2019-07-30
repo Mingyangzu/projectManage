@@ -26,7 +26,7 @@ class ProjectController extends SecondController {
         $data['status'] = $this->contract_status;
         $data['type'] = Db::table('type')->where('status', 1)->pluck('name', 'id')->toArray();
         $data['pay_status'] = $this->project_pay_status;
-        $data['customer'] = Db::table('customer')->orderBy('id', 'desc')->pluck('username', 'id')->toArray();
+        $data['customer'] = Db::table('customer')->whereNull('deleted_at')->orderBy('id', 'desc')->pluck('username', 'id')->toArray();
         $data['adminer'] = Db::table('admin_role')->leftJoin('admin', 'admin_role.admin_id', '=', 'admin.id')
                         ->where([['admin_role.role_id', 2], ['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
         return view('Manage.project', ['title' => '项目列表', 'data' => json_encode($data)]);
@@ -44,11 +44,12 @@ class ProjectController extends SecondController {
         $request->filled('type_id') && $where[] = ['project.type_id', $request->type_id];
         $request->filled('status') && $where[] = ['project.status', $request->status];
         $request->filled('payment_status') && $where[] = ['project.payment_status', $request->payment_status];
-
+        
         $total = ProjectsModel::where($where);
-        $lists = ProjectsModel::selectRaw('project.*, count(record.project_id) total')
-                ->leftJoin('record', 'project.id', '=', 'record.project_id')
+        $lists = ProjectsModel::selectRaw('project.*, count(records.project_id) total')
+                ->leftJoin('records', 'project.id', '=', 'records.project_id')
                 ->where($where);
+        $lists = $lists->whereNull('records.deleted_at');
 
         if ($request->filled('deliver_date')) {
             $ctimearr = explode('@', $request->deliver_date);
@@ -68,44 +69,53 @@ class ProjectController extends SecondController {
     // 添加客户
     public function addproject(Request $request) {
         if (!$request->isMethod('post')) {
-            $this->returnMsg['code'] = 304;
             $this->returnMsg['msg'] = '请求方式有误!';
-            return json_encode($this->returnMsg);
-        }
-        if (!$request->filled('name')) {
-            $this->returnMsg['code'] = 304;
+        }else if (!$request->filled('name')) {
             $this->returnMsg['msg'] = '项目名为必填项!';
-            return json_encode($this->returnMsg);
+        }else if (!$request->filled('customer_id')) {
+            $this->returnMsg['msg'] = '客户为必选项!';
+        }else if (!$request->filled('type_id')) {
+            $this->returnMsg['msg'] = '项目类型必选项!';
+        }else if (!$request->filled('status')) {
+            $this->returnMsg['msg'] = '项目状态必选项!';
+        }else if (!$request->filled('note')) {
+            $this->returnMsg['msg'] = '需求说明为必选填项!';
         }
-        if (!$request->filled('customer_id')) {
+        
+        if($this->returnMsg['msg'] != ''){
             $this->returnMsg['code'] = 304;
-            $this->returnMsg['msg'] = '联系电话、座机、微信号至少一个必填!';
             return json_encode($this->returnMsg);
         }
-
+        
+        
         $savedata = [];
         $savedata['name'] = $request->name;
-        $request->filled('is_new_customer') && $savedata['is_new_customer'] = $request->is_new_customer;
-        $request->filled('type') && $savedata['type'] = $request->type;
-        $request->filled('source') && $savedata['source'] = $request->source;
-        $request->filled('company') && $savedata['company'] = $request->company;
-        $request->filled('address') && $savedata['address'] = $request->address;
-        $request->filled('phone') && $savedata['phone'] = $request->phone;
-        $request->filled('landline') && $savedata['landline'] = $request->landline;
-        $request->filled('wechat') && $savedata['wechat'] = $request->wechat;
-        $request->filled('position') && $savedata['position'] = $request->position;
+        $savedata['customer_id'] = $request->customer_id;
+        $savedata['customer_name'] = Db::table('customer')->where('id', $request->customer_id)->value('username');
+        $savedata['type_id'] = $request->type_id;
+        
+        $request->filled('status') && $savedata['status'] = $request->status;
+        $request->filled('develop_date') && $savedata['develop_date'] = $request->develop_date;
+        $request->filled('deliver_date') && $savedata['deliver_date'] = $request->deliver_date;
+        $request->filled('payment_status') && $savedata['payment_status'] = $request->payment_status;
+        $request->filled('is_bid') && $savedata['is_bid'] = $request->is_bid;
+        
+        $request->filled('admin_id') && $savedata['admin_id'] = $request->admin_id;
+        $request->filled('admin_id') && $savedata['admin_name'] = Db::table('admin')->where('id', $request->admin_id)->value('name');
+        
+        $savedata['note'] = $request->note;
         $request->filled('remarks') && $savedata['remarks'] = $request->remarks;
 
         if ($request->filled('editid')) {
             $savedata['last_time'] = time();
-            $msg = CustomerModel::where('id', $request->editid)->update($savedata);
+            $msg = ProjectsModel::where('id', $request->editid)->update($savedata);
         } else {
-            $savedata['admin_id'] = $this->arr_login_user['id'];
-            $savedata['admin_name'] = $this->arr_login_user['name'];
+            $savedata['input_id'] = $this->arr_login_user['id'];
+            $savedata['input_name'] = $this->arr_login_user['name'];
             $savedata['create_time'] = time();
-            $msg = CustomerModel::insert($savedata);
+            $msg = ProjectsModel::insert($savedata);
         }
-
+//return json_encode($savedata);
         if ($msg == true) {
             $this->returnMsg['msg'] = '成功!';
         } else {
@@ -116,33 +126,53 @@ class ProjectController extends SecondController {
         return json_encode($this->returnMsg);
     }
 
-    /**
-     * 获取客户信息
-     * @author tuomeikeji
-     * @time 2019-04-18
-     */
-    public function getproject() {
-        $customer_table = config('constants.CUSTOMER');
+    //获取项目信息
+    public function getproject(Request $request) {
+        if (!$request->filled('project_id')) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '提交参数有误!';
+            return $this->returnMsg;
+        }
+        
+        $infos = ProjectsModel::where('id', $request->project_id)->first();
 
-        $customer_id = trim(Input::get('customer_id'));
-        $arr_customer_where = [[$customer_table . '.id', $customer_id]];
-        $obj_customer = DB::table($customer_table)->where($arr_customer_where)->first();
+//            $infos->show_status=$this->customer_status[$infos->status];
+//            $infos->show_source=$this->customer_source[$infos->source];
+//            $infos->show_type=$this->customer_type[$infos->type];
 
-//            $obj_customer->show_status=$this->customer_status[$obj_customer->status];
-//            $obj_customer->show_source=$this->customer_source[$obj_customer->source];
-//            $obj_customer->show_type=$this->customer_type[$obj_customer->type];
-
-        if ($obj_customer) {
-            $obj_customer->create_time = date('Y-m-d H:i:s', $obj_customer->create_time);
-            $obj_customer->last_time = date('Y-m-d H:i:s', $obj_customer->last_time);
+        if ($infos) {
+//            $infos->create_time = date('Y-m-d H:i:s', $infos->create_time);
+//            $infos->last_time = date('Y-m-d H:i:s', $infos->last_time);
             $this->returnMsg['msg'] = '成功!';
-            $this->returnMsg['data'] = $obj_customer;
+            $this->returnMsg['data'] = $infos;
         } else {
             $this->returnMsg['code'] = 500;
             $this->returnMsg['msg'] = '获取失败!';
         }
 
         return json_encode($this->returnMsg);
+    }
+
+    //软删除项目
+    public function delproject(Request $request) {
+        if (!$request->isMethod('delete')) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '请求方式有误!';
+            return $this->returnMsg;
+        }
+        if (!$request->filled('project_id')) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '提交参数有误!';
+            return $this->returnMsg;
+        }
+
+        $info = ProjectsModel::where('id', $request->project_id)->delete();
+        if (!$info) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '删除失败!';
+        }
+
+        return $this->returnMsg;
     }
 
 }

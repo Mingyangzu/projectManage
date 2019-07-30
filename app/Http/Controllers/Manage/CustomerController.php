@@ -146,7 +146,7 @@
         }
         
         // 获取用户所属项目
-        public function getcontract(Request $request){
+        public function getprojects(Request $request){
             if(!$request->filled('customer_id')){
                 $this->returnMsg['code'] = 304;
                 $this->returnMsg['msg'] = '提交参数有误!';
@@ -170,6 +170,29 @@
             return $this->returnMsg;
         }
 
+        
+        //软删除客户
+        public function delcustomer(Request $request){
+            if(!$request->isMethod('delete')){
+                $this->returnMsg['code'] = 304;
+                $this->returnMsg['msg'] = '请求方式有误!';
+                return $this->returnMsg;
+            }
+            if(!$request->filled('customer_id')){
+                $this->returnMsg['code'] = 304;
+                $this->returnMsg['msg'] = '提交参数有误!';
+                return $this->returnMsg;
+            }
+            
+            $info = CustomerModel::where('id', $request->customer_id)->delete();
+            if(!$info){
+                $this->returnMsg['code'] = 304;
+                $this->returnMsg['msg'] = '删除失败!';
+            }
+            
+            return $this->returnMsg;
+        }
+        
         
         
         /**

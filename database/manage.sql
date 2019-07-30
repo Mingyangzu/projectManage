@@ -6,10 +6,14 @@
 alter table contract change status status tinyint(3) not null default 1 
 comment'项目状态：0 已作废；1 跟踪中；2 已签约；3 派单中；4 开发中；5 收款期；9 已完结；10 转售后；';
 
+alter table contract add deleted_at int comment'软删除'; 
+alter table tuomei.contract add input_id int comment'录入人id' after end_time;
+alter table tuomei.contract add input_name char(32) comment'录入人名' after input_id;
+alter table tuomei.contract change column `describe` `describe` text null comment'合同描述'; 
 
 /* customer  */
 alter table customer add admin_name char(32) tinyint(3) comment'业务员名' after admin_id;
-
+alter table customer add delete_at int  comment'软删除'; 
 
 /* project  */
 alter table project add admin_name char(32) comment'业务员名' after admin_id;
@@ -26,28 +30,55 @@ alter table project add develop_date date comment'开发开始时间' after type
 alter table project add deliver_date date comment'交付时间' after develop_date;
 alter table project add note text comment'需求内容' after remarks;
 alter table project change remarks remarks text comment'项目说明';
+alter table project add delete_at int comment'软删除'; 
 
+alter table project add input_id int comment'录入人id' after is_bid;
+alter table project add input_name char(32) comment'录入人名' after input_id;
 
 
 
 /* records  */
-CREATE TABLE IF NOT EXISTS `record` (
+CREATE TABLE IF NOT EXISTS `records` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `project_id` int unsigned NOT NULL comment '项目id',
-  `projet_name` varchar(255) comment '项目名',
-  `admin_id` int unsigned NOT NULL comment'记录人id',
-  `admin_name` char(32)  comment'记录人',
+  `project_name` varchar(255) comment '项目名',
+  `input_id` int unsigned NOT NULL comment'记录人id',
+  `input_name` char(32)  comment'记录人',
   `customer_id` int unsigned NOT NULL comment'客户id',
   `customer_name` char(32) comment'客户名',
   `process` text  comment'沟通过程',
   `result` text  comment'沟通结果',
   `question` text  comment'遗留问题',
-  `create_time` int(10) comment '添加时间',
-  `update_time` int(10) comment '修改时间',
+  `record_at` int comment '沟通时间',
+  `create_at` int comment '添加时间',
+  `update_at` int comment '修改时间',
+  `deleted_at` int comment '软删除',
   PRIMARY KEY (`id`),
   key `projectid` (`project_id`),
   key `adminid` (`admin_id`)
 ) ENGINE=innodb  DEFAULT CHARSET=utf8 comment'项目沟通记录表';
+
+
+/* packages  */
+CREATE TABLE IF NOT EXISTS `packages` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` int unsigned NOT NULL comment '项目id',
+  `projet_name` varchar(255) comment '项目名',
+  `input_id` int unsigned NOT NULL comment'添加人id',
+  `input_name` char(32)  comment'添加人',
+  `package_app` varchar(255)  comment'app程序包',
+  `app_size` decimal(10,2) comment'app程序包大小',
+  `package_web` varchar(255)  comment'web程序包',
+  `web_size` decimal(10,2) comment'web程序包大小',
+  `package_sql` varchar(255)  comment'数据库包',
+  `sql_size` decimal(10,2) comment'数据库包大小',
+  `remarks` text comment '备注信息',
+  `created_at` int comment '添加时间',
+  `updated_at` int comment '修改时间',
+  `deleted_at` int comment '软删除',
+  PRIMARY KEY (`id`),
+  key `projectid` (`project_id`)
+) ENGINE=innodb  DEFAULT CHARSET=utf8 comment'项目程序包表';
 
 
 

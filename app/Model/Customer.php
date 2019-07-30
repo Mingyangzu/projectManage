@@ -2,14 +2,18 @@
 
 namespace App\Model;
 
+
 //客户
 class Customer extends Model {
 
     protected $table = 'customer';
     protected $primaryKey = 'id';
+    protected $dateFormat = 'U';
 
     const CREATED_AT = 'create_time';
     const UPDATED_AT = 'last_time';
+    
+//    protected $dates = ['deleted_at'];
 
     public function __construct() {
         parent::__construct();
@@ -27,5 +31,6 @@ class Customer extends Model {
         return $this->hasMany('App\Model\Projects', 'customer_id', 'id');
     }
     
+   
 
 }

@@ -1,274 +1,177 @@
 <?php
-    namespace App\Http\Controllers\Manage;
-    use App\Http\Controllers\SecondController;
-    use Illuminate\Support\Facades\Input;
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Pagination\LengthAwarePaginator;
-    use Illuminate\Support\Facades\Validator;
-    use App\Rules\verfcount;
-    use App\Rules\verfmoney;
-    class ContractController extends SecondController
-    {
-        public function __construct()
-        {
-            parent::__construct();
-        }
 
-        /**
-         * 合同首页
-         * @author tuomeikeji
-         * @time 2019-04-19
-         */
-        public function index()
-        {
-            $arr_var=['title'=>'合同管理'];
+namespace App\Http\Controllers\Manage;
 
-            $contract_table=config('constants.CONTRACT');
-            $project_table=config('constants.PROJECT');
-            $customer_table=config('constants.CUSTOMER');
-            $arr_post_data=Input::get();
+use Illuminate\Support\Facades\Input;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Validator;
+use App\Rules\verfcount;
+use App\Rules\verfmoney;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\SecondController;
+use App\Model\Projects as ProjectsModel;
+use App\Model\Customer as CustomerModel;
+use App\Model\Contract as ContractModel;
 
-            $arr_var['arr_post_data']=$arr_post_data;
-            foreach($arr_post_data as $k=>$v)
-            {
-                $arr_post_data[$k]=trim($v);
-            }
+class ContractController extends SecondController {
 
-            $arr_contract_where=$this->arr_login_user['is_super']==1 ? [] : [[$project_table.'.status',1],[$customer_table.'.source','<>',4],[$customer_table.'.admin_id',$this->arr_login_user['id']]];//where条件
+    public $returnMsg = ['code' => 200, 'data' => [], 'msg' => ''];
 
-            if(isset($arr_post_data['p_id']))
-            {
-                $arr_contract_where[]=[$contract_table.'.project_id','=',$arr_post_data['p_id']];
-            }
-            if(isset($arr_post_data['select_project_name']) && $arr_post_data['select_project_name']!='')
-            {
-                $arr_contract_where[]=[$project_table.'.name','=',$arr_post_data['select_project_name']];
-            }
-            if(isset($arr_post_data['select_contract_title']) && $arr_post_data['select_contract_title']!='')
-            {
-                $arr_contract_where[]=[$contract_table.'.title','=',$arr_post_data['select_contract_title']];
-            }
-            if(isset($arr_post_data['select_contract_status']) && $arr_post_data['select_contract_status']!=2)
-            {
-                $arr_contract_where[]=[$contract_table.'.status','=',$arr_post_data['select_contract_status']];
-            }
-            if(isset($arr_post_data['select_contract_money']) && $arr_post_data['select_contract_money']!='')
-            {
-                $arr_contract_where[]=[$contract_table.'.money','=',$arr_post_data['select_contract_money']];
-            }
-            if(isset($arr_post_data['select_contract_time']) && $arr_post_data['select_contract_time']!='')
-            {
-                $arr_contract_where[]=[$contract_table.'.contract_time','=',strtotime($arr_post_data['select_contract_time'])];
-            }
-
-            $current_page = Input::get("page",1);
-    //        DB::connection()->enableQueryLog();
-            $arr_data = DB::table($contract_table)->join($project_table,$project_table.'.id','=',$contract_table.'.project_id')->join($customer_table,$customer_table.'.id','=',$project_table.'.customer_id')->select($contract_table.'.*',$project_table.'.name as project_name',$customer_table.'.company')->where($arr_contract_where)->orderBy('id', 'desc')->get();
-    //var_dump($arr_data);
-    //         $last_sql=DB::getQueryLog();
-    // var_dump($last_sql);
-            $items = array_slice(json_decode(json_encode($arr_data),true),($current_page-1)*$this->pub_per_page,$this->pub_per_page);
-            $arr_var['contract_rows']=count($arr_data);
-            $arr_var['arr_contract'] = new LengthAwarePaginator($items, $arr_var['contract_rows'],$this->pub_per_page);
-            $arr_var['arr_contract_status']=$this->contract_status;
-            $arr_var['app_url']=env('APP_URL');
-
-            return view('Admin.contract_index',$arr_var);
-        }
-
-        /**
-         * 获取合同信息
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        public function get_contract()
-        {
-            $contract_table=config('constants.CONTRACT');
-            $project_table=config('constants.PROJECT');
-
-            $contract_id=trim(Input::get('contract_id'));
-            $arr_contract_where=[[$contract_table.'.id',$contract_id]];
-            $obj_contract_records=DB::table($contract_table)->join($project_table,$project_table.'.id','=',$contract_table.'.project_id')->select($contract_table.'.*',$project_table.'.name as project_name')->where($arr_contract_where)->first();
-            $obj_contract_records->take_effect_time=date('Y-m-d H:i',$obj_contract_records->take_effect_time);
-            $obj_contract_records->end_time=date('Y-m-d H:i',$obj_contract_records->end_time);
-            $obj_contract_records->contract_time=date('Y-m-d H:i',$obj_contract_records->contract_time);
-            $obj_contract_records->contract_show_url=env('APP_URL').'/'.$obj_contract_records->url;
-//var_dump($obj_contract_records);die;
-    //            var_dump(json_encode($obj_project));die;
-            return $obj_contract_records==NULL ? 0 : json_encode($obj_contract_records);
-        }
-
-        /**
-         *更新合同信息
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        public function update_contract()
-        {
-            $contract_table=config('constants.CONTRACT');
-            $project_table=config('constants.PROJECT');
-
-            $arr_update=self::pub_add_update();
-
-            $arr_project_where=[['name',$arr_update['project_name']],['status',1]];
-            $obj_project=DB::table($project_table)->select('id')->where($arr_project_where)->first();//查询项目是否存在
-            if($obj_project==NULL)
-            {
-                $this->arr_return['message']='项目不存在';
-                $this->arr_return['error_input']='modal_project_name';
-                return json_encode($this->arr_return);
-            }
-
-            $arr_update['project_id']=$obj_project->id;
-            $arr_update['last_time'] = time();
-            unset($arr_update['project_name']);
-
-            $contract_id=$arr_update['contract_id'];
-            $arr_contract_where=[[$contract_table.'.title','=',$arr_update['title']],[$contract_table.'.project_id','=',$arr_update['project_id']],[$contract_table.'.id','<>',$contract_id]];
-            $obj_is_contract=DB::table($contract_table)->select('id')->where($arr_contract_where)->first();//查询合同是否存在
-            if(isset($obj_is_contract))
-            {
-                $this->arr_return['message']='该合同已存在';
-                $this->arr_return['error_input']='';
-                return json_encode($this->arr_return);
-            }
-            unset($arr_update['contract_id']);
-            DB::table($contract_table)
-                ->where('id', $contract_id)
-                ->update($arr_update);
-            $this->arr_return['status'] = 1;
-            $this->arr_return['message'] = '修改成功';
-            return json_encode($this->arr_return);
-        }
-
-        /**
-         *添加合同
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        public function add_contract()
-        {
-            $contract_table=config('constants.CONTRACT');
-            $project_table=config('constants.PROJECT');
-
-            $arr_update=self::pub_add_update();
-
-            $arr_project_where=[['name',$arr_update['project_name']],['status',1]];
-            $obj_project=DB::table($project_table)->select('id')->where($arr_project_where)->first();//查询项目是否存在
-            if($obj_project==NULL)
-            {
-                $this->arr_return['message']='项目不存在';
-                $this->arr_return['error_input']='modal_project_name';
-                return json_encode($this->arr_return);
-            }
-            $arr_update['project_id']=$obj_project->id;
-            $arr_update['last_time'] = time();
-            unset($arr_update['project_name']);
-
-    //        unset($arr_update['collection_id']);
-            $arr_contract_where=[[$contract_table.'.title','=',$arr_update['title']],[$contract_table.'.project_id','=',$arr_update['project_id']]];
-
-            $obj_is_contract=DB::table($contract_table)->select('id')->where($arr_contract_where)->first();//查询合同是否存在
-            if(isset($obj_is_contract))
-            {
-                $this->arr_return['message']='该合同已存在';
-                $this->arr_return['error_input']='';
-                return json_encode($this->arr_return);
-            }
-            $arr_update['create_time'] = time();
-            unset($arr_update['contract_id']);
-            $insert_id=DB::table($contract_table)->insertGetId($arr_update);
-            if($insert_id>0)
-            {
-                $this->arr_return['status'] = 1;
-                $this->arr_return['message'] = '添加成功';
-                return json_encode($this->arr_return);
-            }
-            $this->arr_return['message'] = '添加失败';
-            return json_encode($this->arr_return);
-        }
-
-        /**
-         * 合同收集
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        private function pub_add_update()
-        {
-            $arr_update=Input::get();
-//            var_dump($arr_update);die;
-            unset($arr_update['_token']);
-            foreach($arr_update as $k=>$v)
-            {
-                $arr_update[$k]=trim(htmlspecialchars($v));
-            }
-            $arr_rule=[
-                'project_name'=>['required',new verfcount(100,'项目名字','modal_project_name')],
-                'title'=>['required',new verfcount(100,'合同标题','modal_contract_title')],
-                'describe'=>new verfcount(20000,'合同描述','modal_contract_describe'),
-                'money'=>['required','numeric',new verfmoney('modal_contract_money')],
-                'take_effect_time'=>['required'],
-                'end_time'=>['required'],
-                'url'=>['required'],
-                'contract_time'=>['required'],
-            ];
-            $arr_message=[
-                'project_name.*'=>['项目名不能为空','modal_project_name'],
-                'title.*'=>['合同标题不能为空','modal_contract_title'],
-                'describe.*'=>['合同描述不能超过20000个字','modal_contract_describe'],
-                'take_effect_time.*'=>['合同生效时间必填','modal_contract_take_effect_time'],
-                'end_time.*'=>['合同截止时间必填','modal_contract_end_time'],
-                'url.*'=>['合同附件不能为空',''],
-                'contract_time.*'=>['签约时间必须选','modal_contract_time'],
-                'money.*'=>['合同金额必须填且必须为数字','modal_contract_money'],
-            ];
-
-            Validator::make($arr_update,$arr_rule,$arr_message)->validate();
-
-            $arr_update['take_effect_time']=strtotime($arr_update['take_effect_time']);
-            $arr_update['end_time']=strtotime($arr_update['end_time']);
-            $arr_update['contract_time']=strtotime($arr_update['contract_time']);
-            return $arr_update;
-        }
-
-        /**
-         * 上传合同
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        public function contract_url()
-        {
-            $file = $_FILES['ajax_upload_files'];
-
-
-            if ($file['error'] == 0)
-            {
-                $url_src='uploads/'.date('Ymd',time()).'/';
-                $static_dir = FCPATH.$url_src;
-                if(!is_dir($static_dir))
-                {
-                    $create_dir=mkdir($static_dir,0777,true);
-                    if(!$create_dir)
-                    {
-                        $this->arr_return['message']='文件未存储';
-                        return json_encode($this->arr_return);
-                    }
-                }
-                $is_upload=move_uploaded_file($file['tmp_name'],$static_dir.$file['name']);
-                if($is_upload)
-                {
-                    $this->arr_return['status']=1;
-                    $this->arr_return['message']='上传成功';
-                    $this->arr_return['file_name']=$file['name'];
-                    $this->arr_return['file_address']=$url_src.$file['name'];
-                    return json_encode($this->arr_return);
-                }
-
-                $this->arr_return['message']='上传失败';
-                return json_encode($this->arr_return);
-            }
-
-            $this->arr_return['message']='上传错误';
-            return json_encode($this->arr_return);
-        }
+    public function __construct() {
+        parent::__construct();
     }
+
+    //合同首页
+    public function index() {
+        $data = [];
+        $data['customer'] = Db::table('customer')->whereNull('deleted_at')->orderBy('id', 'desc')->pluck('username', 'id')->toArray();
+//        $data['adminer'] = Db::table('admin_role')->leftJoin('admin', 'admin_role.admin_id', '=', 'admin.id')
+//                        ->where([['admin_role.role_id', 2], ['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
+        $data['project'] = Db::table('project')->whereBetween('status', [1, 10])->whereNull('deleted_at')->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
+        return view('Manage.contract', ['title' => '项目合同列表', 'data' => json_encode($data)]);
+    }
+
+    // 合同信息列表
+    public function contractlist(Request $request) {
+        $page = $request->filled('page') <= 1 ? 0 : $request->page - 1;
+        $limit = $request->filled('limit') ? 10 : $request->limit;
+        $where = [];
+        $request->filled('project_name') && $where[] = ['project.name', 'like', '%' . $request->project_name . '%'];
+        $request->filled('title') && $where[] = ['contract.title', 'like', '%' . $request->title . '%'];
+        $request->filled('customer_id') && $where[] = ['project.customer_id', $request->customer_id];
+
+        $total = ContractModel::where($where)->leftJoin('project', 'project.id', '=', 'contract.project_id');
+        $lists = ContractModel::selectRaw('contract.*, project.name, project.customer_name')->where($where)
+                ->leftJoin('project', 'project.id', '=', 'contract.project_id');
+
+        if ($request->filled('take_effect_time')) {
+            $ctimearr = explode('@', $request->take_effect_time);
+            $lists = $lists->whereBetween('contract.take_effect_time', [strtotime($ctimearr[0]), strtotime($ctimearr[1])]);
+            $total = $total->whereBetween('contract.take_effect_time', [strtotime($ctimearr[0]), strtotime($ctimearr[1])]);
+        }
+
+        if ($request->actiontype == 'notlist') {
+            $lists = $lists->orderBy('contract.id', 'desc')->get();
+        } else {
+            $total = $total->count();
+            $lists = $lists->orderBy('contract.id', 'desc')->skip($page * $limit)->take($limit)->get();
+            $this->returnMsg['total'] = $total;
+        }
+
+        $this->returnMsg['data'] = $lists;
+        $this->returnMsg['msg'] = 'success';
+        return json_encode($this->returnMsg);
+
+//        $arr_contract_where = $this->arr_login_user['is_super'] == 1 ? [] : [[$project_table . '.status', 1], [$customer_table . '.source', '<>', 4], [$customer_table . '.admin_id', $this->arr_login_user['id']]]; //where条件
+    }
+
+    //获取合同信息
+    public function getcontract(Request $request) {
+        if (!$request->filled('contract_id')) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '提交参数有误!';
+            return $this->returnMsg;
+        }
+
+        $infos = ContractModel::where('id', $request->contract_id)->first();
+
+        if ($infos) {
+//            $infos->create_time = date('Y-m-d H:i:s', $infos->create_time);
+//            $infos->last_time = date('Y-m-d H:i:s', $infos->last_time);
+            $this->returnMsg['msg'] = '成功!';
+            $this->returnMsg['data'] = $infos;
+        } else {
+            $this->returnMsg['code'] = 500;
+            $this->returnMsg['msg'] = '获取失败!';
+        }
+
+        return json_encode($this->returnMsg);
+    }
+
+    // 添加 修改合同
+    public function addcontract(Request $request) {
+        if (!$request->isMethod('post')) {
+            $this->returnMsg['msg'] = '请求方式有误!';
+        } else if (!$request->filled('title')) {
+            $this->returnMsg['msg'] = '合同标题为必填项!';
+        } else if (!$request->filled('project_id')) {
+            $this->returnMsg['msg'] = '项目为必选项!';
+        } else if (!$request->filled('money')) {
+            $this->returnMsg['msg'] = '合同金额为必填项!';
+        }
+
+        if ($this->returnMsg['msg'] != '') {
+            $this->returnMsg['code'] = 304;
+            return json_encode($this->returnMsg);
+        }
+
+
+        $savedata = [];
+        $savedata['title'] = $request->title;
+        $savedata['project_id'] = $request->project_id;
+        $savedata['money'] = $request->money;
+
+        $request->filled('take_effect_time') && $savedata['take_effect_time'] = strtotime($request->take_effect_time);
+        $request->filled('contract_time') && $savedata['contract_time'] = strtotime($request->contract_time);
+        $request->filled('end_time') && $savedata['end_time'] = strtotime($request->end_time);
+        $request->filled('describe') && $savedata['describe'] = $request->describe;
+        $request->filled('url') && $savedata['url'] = $request->url;
+
+        if ($request->filled('editid')) {
+            $savedata['last_time'] = time();
+            $msg = ContractModel::where('id', $request->editid)->update($savedata);
+        } else {
+            $savedata['input_id'] = $this->arr_login_user['id'];
+            $savedata['input_name'] = $this->arr_login_user['name'];
+            $savedata['create_time'] = time();
+            $msg = ContractModel::insert($savedata);
+        }
+//return json_encode($savedata);
+        if ($msg == true) {
+            $this->returnMsg['msg'] = '成功!';
+        } else {
+            $this->returnMsg['code'] = 500;
+            $this->returnMsg['msg'] = '失败!';
+        }
+
+        return json_encode($this->returnMsg);
+    }
+
+    //软删除合同信息
+    public function delcontract(Request $request) {
+        if (!$request->filled('contract_id')) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '提交参数有误!';
+            return $this->returnMsg;
+        }
+
+        $infos = ContractModel::where('id', $request->contract_id)->delete();
+
+        if ($infos) {
+            $this->returnMsg['msg'] = '成功!';
+            $this->returnMsg['data'] = $infos;
+        } else {
+            $this->returnMsg['code'] = 500;
+            $this->returnMsg['msg'] = '失败!';
+        }
+
+        return json_encode($this->returnMsg);
+    }
+
+    // 上传合同文件
+    public function upcontractfiles(Request $request) {
+        if (!$request->file('contractfiles')->isValid()) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '上传的文件无效!';
+            return $this->returnMsg;
+        }
+
+        $savefile = Storage::disk('public')->put('contract/' . date('Ym'), $request->contractfiles);
+        $this->returnMsg['data'] = Storage::disk('local')->url($savefile);
+
+        return json_encode($this->returnMsg);
+    }
+
+}

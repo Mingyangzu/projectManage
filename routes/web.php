@@ -100,13 +100,34 @@ Route::group(['namespace' => 'Manage'], function(){
    Route::get('customerlist', 'CustomerController@customerlist')->name('customerlist');
    Route::post('addcustomer', 'CustomerController@addcustomer')->name('addcustomer');
    Route::get('getcustomer', 'CustomerController@getcustomer')->name('getcustomer');
-   Route::get('getcontract', 'CustomerController@getcontract')->name('getcontract');
+   Route::get('getprojects', 'CustomerController@getprojects')->name('getprojects');
+   Route::delete('delcustomer', 'CustomerController@delcustomer')->name('delcustomer');
    
    Route::get('project_index','ProjectController@index')->name('project');
    Route::get('projectlist','ProjectController@projectlist')->name('projectlist');
    Route::post('addproject', 'ProjectController@addproject')->name('addproject');
    Route::get('getproject', 'ProjectController@getproject')->name('getproject');
+   Route::delete('delproject', 'ProjectController@delproject')->name('delproject');
    
+   Route::get('record', 'RecordController@index')->name('record');
+   Route::post('addrecord', 'RecordController@addrecord')->name('addrecord');
+   Route::get('getrecord', 'RecordController@getrecord')->name('getrecord');
+   Route::get('getrecordlist', 'RecordController@getrecordlist')->name('getrecordlist');
+   Route::delete('delrecord', 'RecordController@delrecord')->name('delrecord');
+   
+   Route::get('pro_contract', 'ContractController@index')->name('pro_contract');
+   Route::get('contractlist', 'ContractController@contractlist')->name('contractlist');
+   Route::post('addcontract', 'ContractController@addcontract')->name('addcontract');
+   Route::get('getcontract', 'ContractController@getcontract')->name('getcontract');
+   Route::delete('delcontract', 'ContractController@delcontract')->name('delcontract');
+   Route::post('upcontractfiles', 'ContractController@upcontractfiles')->name('upcontractfiles');
+   
+   Route::get('pro_package', 'PackageController@index')->name('pro_package');
+   Route::get('packagelist', 'PackageController@packagelist')->name('packagelist');
+   Route::post('addpackage', 'PackageController@addpackage')->name('addpackage');
+   Route::get('getpackage', 'PackageController@getpackage')->name('getpackage');
+   Route::delete('delpackage', 'PackageController@delpackage')->name('delpackage');
+   Route::post('uppackagefiles', 'PackageController@uppackagefiles')->name('uppackagefiles');
    
 });
 
