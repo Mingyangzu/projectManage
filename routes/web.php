@@ -115,14 +115,14 @@ Route::group(['namespace' => 'Manage'], function(){
    Route::get('getrecordlist', 'RecordController@getrecordlist')->name('getrecordlist');
    Route::delete('delrecord', 'RecordController@delrecord')->name('delrecord');
    
-   Route::get('pro_contract', 'ContractController@index')->name('pro_contract');
+   Route::get('contract', 'ContractController@index')->name('contract');
    Route::get('contractlist', 'ContractController@contractlist')->name('contractlist');
    Route::post('addcontract', 'ContractController@addcontract')->name('addcontract');
    Route::get('getcontract', 'ContractController@getcontract')->name('getcontract');
    Route::delete('delcontract', 'ContractController@delcontract')->name('delcontract');
    Route::post('upcontractfiles', 'ContractController@upcontractfiles')->name('upcontractfiles');
    
-   Route::get('pro_package', 'PackageController@index')->name('pro_package');
+   Route::get('package', 'PackageController@index')->name('package');
    Route::get('packagelist', 'PackageController@packagelist')->name('packagelist');
    Route::post('addpackage', 'PackageController@addpackage')->name('addpackage');
    Route::get('getpackage', 'PackageController@getpackage')->name('getpackage');

@@ -12,8 +12,8 @@ alter table tuomei.contract add input_name char(32) comment'录入人名' after 
 alter table tuomei.contract change column `describe` `describe` text null comment'合同描述'; 
 
 /* customer  */
-alter table customer add admin_name char(32) tinyint(3) comment'业务员名' after admin_id;
-alter table customer add delete_at int  comment'软删除'; 
+alter table customer add admin_name char(32) comment'业务员名' after admin_id;
+alter table customer add deleted_at int  comment'软删除'; 
 
 /* project  */
 alter table project add admin_name char(32) comment'业务员名' after admin_id;
@@ -23,14 +23,12 @@ alter table project add customer_name char(64) comment'客户名' after customer
 update project left join customer on project.customer_id = customer.id set project.customer_name = customer.username where project.id < 1000;
 
 alter table project change status status tinyint(3) default 1 comment'项目状态：0 已作废；1 跟踪中；2 已签约；3 派单中；4 开发中；5 收款期；9 已完结；10 转售后；';
-alter table project add develop_date date comment'开发开始时间' after type_id;
-alter table project add deliver_date date comment'交付时间' after develop_date;
 
 alter table project add develop_date date comment'开发开始时间' after type_id;
 alter table project add deliver_date date comment'交付时间' after develop_date;
 alter table project add note text comment'需求内容' after remarks;
 alter table project change remarks remarks text comment'项目说明';
-alter table project add delete_at int comment'软删除'; 
+alter table project add deleted_at int comment'软删除'; 
 
 alter table project add input_id int comment'录入人id' after is_bid;
 alter table project add input_name char(32) comment'录入人名' after input_id;
@@ -54,8 +52,7 @@ CREATE TABLE IF NOT EXISTS `records` (
   `update_at` int comment '修改时间',
   `deleted_at` int comment '软删除',
   PRIMARY KEY (`id`),
-  key `projectid` (`project_id`),
-  key `adminid` (`admin_id`)
+  key `projectid` (`project_id`)
 ) ENGINE=innodb  DEFAULT CHARSET=utf8 comment'项目沟通记录表';
 
 
@@ -63,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `records` (
 CREATE TABLE IF NOT EXISTS `packages` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `project_id` int unsigned NOT NULL comment '项目id',
-  `projet_name` varchar(255) comment '项目名',
+  `project_name` varchar(255) comment '项目名',
   `input_id` int unsigned NOT NULL comment'添加人id',
   `input_name` char(32)  comment'添加人',
   `package_app` varchar(255)  comment'app程序包',
