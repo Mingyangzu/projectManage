@@ -1,5 +1,6 @@
 <div id='notebox' style='display: none; margin: 10px 20px;'>
     <form class="layui-form  layui-form-pane" lay-filter="noteform" onsubmit="return false;">
+        <input type='hidden' name='editid'>
         <input type='hidden' name='project_id'>
         <input type='hidden' name='customer_id'>
         <div class="layui-form-item">
@@ -42,7 +43,7 @@
         <div class="layui-form-item  editevent">
             <div class="layui-input-block">
                 {{ csrf_field() }}
-                <button class="layui-btn" lay-submit="" lay-filter="recordsubform">添加记录</button>
+                <button class="layui-btn" lay-submit="" lay-filter="recordsubform">提交记录</button>
             </div>
         </div>
     </form>

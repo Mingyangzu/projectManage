@@ -9,8 +9,10 @@ class Projects extends Model {
     protected $primaryKey = 'id';
     protected $dateFormat = 'U';
 
+    const CREATED_AT = 'create_time';
+    const UPDATED_AT = 'last_time';
 
-    protected $appends = ['surplus'];
+    protected $appends = ['surplus', 'created_date'];
 
     public function __construct() {
         parent::__construct();
@@ -25,13 +27,18 @@ class Projects extends Model {
         return $this->deliver_date ? round((strtotime($this->deliver_date) - time()) / 86400) : 0;
     }
     
+    public function getCreatedDateAttribute(){
+        return $this->create_time ? date('Y-m-d', strtotime($this->create_time)) : '';
+    }
     
-    public function getCreatedAtAttribute($value){
+    
+    public function getCreateTimeAttribute($value){
         return $value ? date('Y-m-d H:i:s', $value) : '';
     }
 
-    public function getUpdatedAtAttribute($value){
+    public function getLastTimeAttribute($value){
         return $value ? date('Y-m-d H:i:s', $value) : '';
     }
 
+    
 }

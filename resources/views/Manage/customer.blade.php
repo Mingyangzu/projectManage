@@ -92,7 +92,7 @@
                     , {field: 'source', title: '来源', templet: function (d) {
                             return  sources[d.source];
                         }, width: 80}
-                    , {field: 'create_time', title: '创建时间', width: 120}
+                    , {field: 'create_time', title: '创建时间', width: 170}
                     , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 160}
                 ]]
             , response: {
@@ -249,19 +249,20 @@
                 str += '<li class="layui-timeline-item">';
                 str += '<i class="layui-icon layui-timeline-axis">&#xe63f;</i>';
                 str += '<div class="layui-timeline-content layui-text">';
-                str += '<h3 class="layui-timeline-title">' + data[i]['create_time'] + '<em>' + data[i]['name'] + '</em> </h3>';
+                str += '<h3 class="layui-timeline-title">' + data[i]['created_date'] + '<em>' + data[i]['name'] + '</em> </h3>';
                 str += '<p> <ul>';
                 str += '<li> 类型: ' + data[i]['type_id'] + '</li>';
                 str += '<li> 项目进度: ' + data[i]['status'] + '</li>';
-                str += '<li> 交付日期: ' + data[i]['deliver_date'] + '</li>';
-                str += '<p> ' + data[i]['remarks'] + ' </p>';
+                str += !data[i]['deliver_date'] ? '' : '<li> 交付日期: ' + data[i]['deliver_date'] + ' &nbsp;&nbsp; 剩余'+ data[i]['surplus'] +'天'+ '</li>';
+                str += !data[i]['remarks'] ? '' : '<p> 项目说明: ' + data[i]['remarks'] + ' </p>';
+                str += !data[i]['note'] ? '' : '<p> 项目需求: ' + data[i]['note'] + ' </p>';
                 str += '</ul>';
                 str += '</p> </div> </li>';
             }
             str += '<li class="layui-timeline-item">';
             str += '<i class="layui-icon layui-timeline-axis">&#xe63f;</i>';
-            str += '<div class="layui-timeline-content layui-text">';
-            str += '<div class="layui-timeline-title">  </div>';
+//            str += '<div class="layui-timeline-content layui-text">';
+//            str += '<div class="layui-timeline-title">  </div>';
             str += '</div>';
             str += '</li>';
             $('#timelinebox').html(str);

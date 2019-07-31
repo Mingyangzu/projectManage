@@ -313,8 +313,8 @@
             }
             str += '<li class="layui-timeline-item">';
             str += '<i class="layui-icon layui-timeline-axis">&#xe63f;</i>';
-            str += '<div class="layui-timeline-content layui-text">';
-            str += '<div class="layui-timeline-title">  </div>';
+//            str += '<div class="layui-timeline-content layui-text">';
+//            str += '<div class="layui-timeline-title">  </div>';
             str += '</div>';
             str += '</li>';
             $('#timelinebox').html(str);

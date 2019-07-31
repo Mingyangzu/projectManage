@@ -31,6 +31,15 @@ class Customer extends Model {
         return $this->hasMany('App\Model\Projects', 'customer_id', 'id');
     }
     
-   
+      
+    public function getCreateTimeAttribute($value){
+        return $value ? date('Y-m-d H:i:s', $value) : '';
+    }
+
+    public function getLasttimeAttribute($value){
+        return $value ? date('Y-m-d H:i:s', $value) : '';
+    }
+    
+    
 
 }

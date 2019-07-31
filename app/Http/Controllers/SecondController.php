@@ -188,7 +188,7 @@
                 $menu_list_table=config('constants.MENU_LIST');
                 $arr_menu_where=[[$menu_table.'.status',1],[$menu_list_table.'.status',1],[$menu_list_table.'.describe','admin']];
                 $menu_list=DB::table($menu_table)->join($menu_list_table,$menu_list_table.'.id','=',$menu_table.'.type')->select($menu_table.'.*')->where($arr_menu_where)->orderBy('order','asc')->orderBy('id','asc')->get();//读取后台导航菜单
-//                var_dump($menu_list);
+//                var_dump($menu_list);die;
                 view()->share('menu_list', $menu_list);
                 return $next($request);
             });

@@ -53,18 +53,18 @@
                     , {field: 'project_name', title: '项目名', width: 200}
                     , {field: 'input_name', title: '客户名', width: 100}
                     , {field: 'package_app', title: 'app包', width: 100, templet: function(d){
-                            return d.package_app ? '<a class="layui-btn" href="'+ d.package_app +'" target="_blank"> &nbsp;&nbsp; 下载 &nbsp;&nbsp;</a>' : '';
+                            return d.package_app ? '<a class="layui-btn" href="'+ d.package_app +'" target="_blank" style="line-height: 28px;"> 下载 </a>' : '';
                     }}
                     , {field: 'app_size', title: 'app大小', width: 100}
                     , {field: 'package_web', title: 'web包', width: 120, templet: function(d){
-                            return d.package_web ? '<a class="layui-btn" href="'+ d.package_web +'" target="_blank"> &nbsp;&nbsp; 下载 &nbsp;&nbsp;</a>' : '';
+                            return d.package_web ? '<a class="layui-btn" href="'+ d.package_web +'" target="_blank" style="line-height: 28px;"> 下载 </a>' : '';
                     }}
                     , {field: 'web_size', title: 'web包大小', width: 100}
                     , {field: 'package_sql', title: 'SQL包', width: 120, templet: function(d){
-                            return d.package_sql ? '<a class="layui-btn" href="'+ d.package_sql +'" target="_blank"> &nbsp;&nbsp; 下载 &nbsp;&nbsp;</a>' : '';
+                            return d.package_sql ? '<a class="layui-btn" href="'+ d.package_sql +'" target="_blank" style="line-height: 28px;"> 下载 </a>' : '';
                     }}
                     , {field: 'sql_size', title: 'SQL包大小', width: 100}
-                    , {field: 'created_at', title: '添加时间', width: 120}
+                    , {field: 'created_at', title: '添加时间', width: 170}
                     , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 160}
                 ]]
             , response: {

@@ -46,6 +46,7 @@
             $total = CustomerModel::where($where);
             $lists = CustomerModel::selectRaw('customer.*, count(project.customer_id) total')
                     ->leftJoin('project', 'customer.id', '=', 'project.customer_id')
+                    ->whereNull('project.deleted_at')
                     ->where($where);
             
             if($request->filled('create_time')){
@@ -115,11 +116,7 @@
             
         }
         
-         /**
-         * 获取客户信息
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
+         //获取客户信息
         public function getcustomer()
         {
             $customer_table=config('constants.CUSTOMER');
@@ -153,7 +150,7 @@
                 return json_encode($this->returnMsg);
             }
             
-            $lists = ProjectsModel::selectRaw('project.id, project.name, project.status, project.admin_name, project.deliver_date, project.create_time, project.remarks, type.name type_id')
+            $lists = ProjectsModel::selectRaw('project.id, project.name, project.status, project.admin_name, project.deliver_date, project.create_time, project.remarks, project.note, type.name type_id')
                     ->leftJoin('type', 'project.type_id', '=', 'type.id')
                     ->where('project.customer_id', $request->customer_id)
                     ->get();

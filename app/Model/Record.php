@@ -9,8 +9,6 @@ class Record extends Model {
     protected $dateFormat = 'U';
 
 
-//    protected $appends = ['surplus'];
-
     public function __construct() {
         parent::__construct();
     }

@@ -148,16 +148,16 @@ class PackageController extends SecondController {
 
     // 上传合同文件
     public function uppackagefiles(Request $request) {
-        ini_set('post_max_size', '300M');
-        ini_set('upload_max_filesize', '300M');
-        ini_set('max_input_time', '300');
+//        ini_set('post_max_size', '300M');
+//        ini_set('upload_max_filesize', '300M');
+//        ini_set('max_input_time', '300');
         if (!$request->file('packagesfiles')->isValid()) {
             $this->returnMsg['code'] = 304;
             $this->returnMsg['msg'] = '上传的文件无效!';
             return $this->returnMsg;
         }
         
-        if($request->packagesfiles->getClientSize() >= 104857600 * 5){
+        if($request->packagesfiles->getClientSize() >= 1048576 * 500){
             $this->returnMsg['code'] = 304;
             $this->returnMsg['msg'] = '上传的文件太大!';
             return $this->returnMsg;

@@ -70,11 +70,7 @@
                     , {field: 'contract_time', title: '生效日期', width: 120}
                     , {field: 'end_time', title: '截止日期', width: 120}
                     , {title: '合同文件', width: 120, templet: function(d){
-                            if (d.url) {
-                                return '<a class="layui-btn layui-btn-xs" href="'+ d.url +'" target="_blank"> &nbsp;&nbsp; 下载 &nbsp;&nbsp;</a>';
-                            }else{
-                                return '';
-                            }
+                            return d.url ? '<a class="layui-btn layui-btn-xs" href="'+ d.url +'" target="_blank"> &nbsp;&nbsp; 下载 &nbsp;&nbsp;</a>' : '';
                     }}
                     , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 160}
                 ]]

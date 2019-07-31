@@ -141,8 +141,6 @@ class ProjectController extends SecondController {
 //            $infos->show_type=$this->customer_type[$infos->type];
 
         if ($infos) {
-//            $infos->create_time = date('Y-m-d H:i:s', $infos->create_time);
-//            $infos->last_time = date('Y-m-d H:i:s', $infos->last_time);
             $this->returnMsg['msg'] = '成功!';
             $this->returnMsg['data'] = $infos;
         } else {

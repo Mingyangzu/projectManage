@@ -189,7 +189,8 @@
 
         var forvalrecord = function (data) {
             form.val("noteform", {
-                project_id: data.project_id
+                editid: data.id
+                ,project_id: data.project_id
                 ,project_name: data.project_name
                 ,customer_id: data.customer_id
                 ,customer_name: data.customer_name
