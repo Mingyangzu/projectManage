@@ -10,7 +10,21 @@
 <div class="demoTable">
     <form class="layui-form layui-form-item" action="" onsubmit="return false;">
         <div class="layui-inline">
-            <input class="layui-input" name="project_name" id="demoReload" placeholder="项目名" >
+            <select name="project_id" class="layui-input"  lay-search>
+                <option value="">选择项目</option>
+                <?php foreach (json_decode($data)->project as $key => $val) { ?>
+                    <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        
+        <div class="layui-inline">
+            <select name="input_id" class="layui-input"  lay-search>
+                <option value="">录入人</option>
+                <?php foreach (json_decode($data)->adminer as $key => $val) { ?>
+                    <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                <?php } ?>
+            </select>
         </div>
 
         <div class="layui-inline">
@@ -51,7 +65,7 @@
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
                     , {field: 'project_name', title: '项目名', width: 200}
-                    , {field: 'input_name', title: '客户名', width: 100}
+                    , {field: 'input_name', title: '录入人', width: 100}
                     , {field: 'package_app', title: 'app包', width: 100, templet: function(d){
                             return d.package_app ? '<a class="layui-btn" href="'+ d.package_app +'" target="_blank" style="line-height: 28px;"> 下载 </a>' : '';
                     }}

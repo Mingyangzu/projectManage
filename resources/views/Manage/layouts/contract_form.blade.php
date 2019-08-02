@@ -14,7 +14,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">  <em style='color:red;'>*</em>  项目</label>
             <div class="layui-input-inline">
-                <select name="project_id" lay-verify="required"  class="layui-input" >
+                <select name="project_id" lay-verify="required"  class="layui-input"  lay-search>
                     <option value="">选择签约项目</option>
                     <?php foreach (json_decode($data)->project as $key => $val) { ?>
                         <option value="<?php echo $key ?>"><?php echo $val ?></option>

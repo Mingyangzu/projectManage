@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <title> 拓美管理系统 - @yield('title')</title>
         <link rel="stylesheet" href="/layui/css/layui.css">
+        <link rel="stylesheet" href="/layui/css/formSelects-v4.css" />
         <script src="/layui/layui.js"></script>
+        <script src="/layui/formSelects-v4.js" type="text/javascript" charset="utf-8"></script>
     </head>
     <body class="layui-layout-body">
         <div class="layui-layout layui-layout-admin">

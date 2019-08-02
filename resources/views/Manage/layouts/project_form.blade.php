@@ -33,14 +33,18 @@
 
         <div class="layui-form-item">
             <label class="layui-form-label"> <em style='color:red;'>*</em> 项目类型</label>
-            <div class="layui-input-inline">
-                <select lay-verify="required" name="type_id" class="layui-input" >
+            <div class="layui-input-block" style="400px;">
+                <select lay-verify="required" name="type_id" class="layui-input" xm-select="input_type_id">
                     <option value="">类型</option>
                     <?php foreach (json_decode($data)->type as $key => $val) { ?>
-                        <option value="<?php echo $key ?>"><?php echo $val ?></option>
+                        <option value="<?php echo $val ?>"><?php echo $val ?></option>
                     <?php } ?>
                 </select>
             </div>
+            
+        </div>
+        
+        <div class="layui-form-item">
             <label class="layui-form-label"> <em style='color:red;'>*</em> 项目状态</label>
             <div class="layui-input-inline">
                 <select name="status" lay-verify="required"  class="layui-input" >

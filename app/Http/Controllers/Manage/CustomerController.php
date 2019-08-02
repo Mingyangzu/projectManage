@@ -28,18 +28,21 @@
         }
 
         public function index(){
-            $data['source'] = $this->customer_source;
-            $data['type'] = $this->customer_type;
+            $data['source'] = config('manage.customer_source');
+            $data['type'] = config('manage.customer_type');
+            $data['adminer'] = Db::table('admin_role')->leftJoin('admin', 'admin_role.admin_id', '=', 'admin.id')
+                        ->where([['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
             return view('Manage.customer',['title' => '客户列表', 'data' => json_encode($data)]);
         }
         
         public function customerlist(Request $request){
-            DB::connection()->enableQueryLog();
+//            DB::connection()->enableQueryLog();
             $page = $request->page <= 1 ? 0 : $request->page - 1;
             $limit = $request->filled('limit') ? 10 : $request->limit;
             $where = [];
             $request->filled('username') && $where[] = ['customer.username', 'like', '%'.$request->username.'%'];
             $request->filled('company') && $where[] = ['customer.company', 'like', '%'. $request->company .'%'];
+            $request->filled('admin_id') && $where[] = ['customer.admin_id', $request->admin_id];
             $request->filled('phone') && $where[] = ['customer.phone', 'like', '%'. $request->phone .'%'];
             $request->filled('source') && $where[] = ['customer.source', $request->source];
             
@@ -57,7 +60,7 @@
             
             $total = $total->count();
             $lists = $lists->groupBy('customer.id')->orderBy('customer.id', 'desc')->offset($page * $limit)->take($limit)->get();
-       dump(DB::getQueryLog());  
+//       dump(DB::getQueryLog());  
             $this->returnMsg['total'] = $total;
             $this->returnMsg['data'] = $lists;
             $this->returnMsg['msg'] = 'success';
@@ -130,8 +133,8 @@
 //            $obj_customer->show_type=$this->customer_type[$obj_customer->type];
 
             if($obj_customer){
-                $obj_customer->create_time = date('Y-m-d H:i:s', $obj_customer->create_time);
-                $obj_customer->last_time = date('Y-m-d H:i:s', $obj_customer->last_time);
+                $obj_customer->create_time = date('Y-m-d', $obj_customer->create_time);
+                $obj_customer->last_time = date('Y-m-d', $obj_customer->last_time);
                 $this->returnMsg['msg'] = '成功!';
                 $this->returnMsg['data'] = $obj_customer;
             }else{

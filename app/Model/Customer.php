@@ -33,11 +33,11 @@ class Customer extends Model {
     
       
     public function getCreateTimeAttribute($value){
-        return $value ? date('Y-m-d H:i:s', $value) : '';
+        return $value ? date('Y-m-d', $value) : '';
     }
 
     public function getLasttimeAttribute($value){
-        return $value ? date('Y-m-d H:i:s', $value) : '';
+        return $value ? date('Y-m-d', $value) : '';
     }
     
     

@@ -12,22 +12,32 @@
         <div class="layui-inline">
             <input class="layui-input" name="name" id="demoReload" placeholder="项目名" >
         </div>
+        
         <div class="layui-inline">
-            <input class="layui-input" name="customer_name" id="demoReload" placeholder="客户名">
-        </div>
-        <div class="layui-inline">
-            <input class="layui-input" name="admin_name" id="demoReload" placeholder="业务员">
-        </div>
-        <div class="layui-inline">
-            <select name="type_id" class="layui-input" >
-                <option value="">项目类型</option>
-                <?php foreach (json_decode($data)->type as $k => $v) { ?>
+            <select name="customer_id" class="layui-input" lay-search>
+                <option value="">客户名 输入文字筛选</option>
+                <?php foreach (json_decode($data)->customer as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
                 <?php } ?>
             </select>
         </div>
+        
+        <div class="layui-inline">
+            <select name="admin_id" class="layui-select" lay-search>
+                <option value="">业务员 输入文字筛选</option>
+                <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
+                    <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        
+        
+        <div class="layui-inline">
+            <input class="layui-input" name="deliver_date" id="formdate" placeholder="交付日期" >
+        </div>
+        
         <div class="layui-input-inline">
-            <select name="status" class="layui-input" >
+            <select name="status" class="layui-select" >
                 <option value="">项目进度</option>
                 <?php foreach (json_decode($data)->status as $key => $val) { ?>
                     <option value="<?php echo $key ?>"><?php echo $val ?></option>
@@ -35,16 +45,23 @@
             </select>
         </div>
         <div class="layui-input-inline">
-            <select name="payment_status" class="layui-input" >
+            <select name="payment_status" class="layui-select" >
                 <option value="">财务状态</option>
                 <?php foreach (json_decode($data)->pay_status as $key => $val) { ?>
                     <option value="<?php echo $key ?>"><?php echo $val ?></option>
                 <?php } ?>
             </select>
         </div>
-        <div class="layui-inline">
-            <input class="layui-input" name="deliver_date" id="formdate" placeholder="交付日期" >
+        
+        <div class="layui-inline" style="width: 400px;">
+            <select name="type_id" class="layui-select" xm-select="select_type_id" >
+                <option value="">项目类型</option>
+                <?php foreach (json_decode($data)->type as $k => $v) { ?>
+                    <option value="<?php echo $v ?>"><?php echo $v ?></option>
+                <?php } ?>
+            </select>
         </div>
+        
         <button class="layui-btn" data-type="reload" lay-submit lay-filter="formDemo">搜索</button>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <button class="layui-btn" data-type="reload" id="addProject">添加项目</button>
@@ -79,7 +96,11 @@
 <script>
     layui.use(['table', 'form', 'laydate', 'jquery'], function () {
         var table = layui.table, $ = layui.jquery, form = layui.form, laydate = layui.laydate;
+        var formSelects = layui.formSelects;
         var sysdata = <?php echo $data ?>;
+        
+        formSelects.btns('select_type_id', ['select', 'remove'], {show: 'icon'});
+        formSelects.btns('input_type_id', ['select', 'remove'], {show: 'icon'});
 
         //第一个实例
         table.render({
@@ -92,16 +113,18 @@
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
                     , {field: 'name', title: '项目名', width: 150}
                     , {field: 'customer_name', title: '客户名', width: 100}
+                    , {field: 'create_time', title: '录入日期', width: 120}
+                    , {field: 'last_time', title: '更新日期', width: 120}
                     , {field: 'admin_name', title: '业务员', width: 100}
                     , {field: 'total', title: '沟通记录数', width: 100, templet: function (d) {
-                            if (d.total > 0) {
-                                return '<a class="layui-btn layui-btn-xs" lay-event="recordlist"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>';
-                            } else {
-                                return 0;
-                            }
+                            return d.total > 0 ? '<a class="layui-btn layui-btn-xs" lay-event="recordlist"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>' : 0 ;
                         }}
-                    , {field: 'type_id', title: '类型', templet: '#types', width: 80, templet: function (d) {
-                            return sysdata['type'][d.type_id];
+                    , {field: 'type_id', title: '类型', templet: '#types', width: 200, templet: function (d) {
+                            var str = '';
+                            for(var i in d.type_id){
+                                str += d.type_id[i] + ' ';
+                            }
+                            return str ;
                         }}
                     , {field: 'status', title: '项目状态', width: 100, templet: function (d) {
                             return sysdata['status'][d.status];
@@ -280,6 +303,7 @@
                 , "createtime": data.create_time
                 , "lasttime": data.last_time
             });
+            layui.formSelects.value('input_type_id', !data.type_id ? [] : data.type_id );
         }
 
         var forvalrecord = function (data) {

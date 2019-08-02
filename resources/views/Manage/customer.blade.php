@@ -16,6 +16,14 @@
             <input class="layui-input" name="company" id="demoReload" placeholder="公司名">
         </div>
         <div class="layui-inline">
+            <select name="admin_id" class="layui-input" lay-search>
+                <option value="">业务员 输入文字筛选</option>
+                <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
+                    <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        <div class="layui-inline">
             <input class="layui-input" name="phone" id="demoReload" placeholder="联系电话" >
         </div>
         <div class="layui-inline">
@@ -75,10 +83,11 @@
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
                     , {field: 'username', title: '客户名', width: 80}
+                    , {field: 'create_time', title: '录入日期', width: 170}
+                    , {field: 'phone', title: '联系方式', width: 130}
                     , {field: 'company', title: '公司名', }
                     , {field: 'position', title: '职位', width: 100}
-                    , {field: 'type', title: '类型', templet: '#types', width: 60}
-                    , {field: 'phone', title: '联系方式', width: 130}
+                    , {field: 'type', title: '类型', templet: '#types', width: 120}
                     , {field: 'total', title: '项目数', width: 80, sort: true, templet: function (d) {
                             if (d.total > 0) {
                                 return '<a class="layui-btn layui-btn-xs" lay-event="project"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>';
@@ -92,7 +101,6 @@
                     , {field: 'source', title: '来源', templet: function (d) {
                             return  sources[d.source];
                         }, width: 80}
-                    , {field: 'create_time', title: '创建时间', width: 170}
                     , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 160}
                 ]]
             , response: {

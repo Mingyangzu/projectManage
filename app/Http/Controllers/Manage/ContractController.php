@@ -38,7 +38,7 @@ class ContractController extends SecondController {
         $page = $request->page <= 1 ? 0 : $request->page - 1;
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
-        $request->filled('project_name') && $where[] = ['project.name', 'like', '%' . $request->project_name . '%'];
+        $request->filled('project_id') && $where[] = ['project.id', $request->project_id];
         $request->filled('title') && $where[] = ['contract.title', 'like', '%' . $request->title . '%'];
         $request->filled('customer_id') && $where[] = ['project.customer_id', $request->customer_id];
 

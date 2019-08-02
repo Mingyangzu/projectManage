@@ -23,12 +23,12 @@ class ProjectController extends SecondController {
 
     //项目列表
     public function index() {
-        $data['status'] = $this->contract_status;
-        $data['type'] = Db::table('type')->where('status', 1)->pluck('name', 'id')->toArray();
-        $data['pay_status'] = $this->project_pay_status;
+        $data['status'] = config('manage.contract_status');
+        $data['type'] = config('manage.project_type_id');
+        $data['pay_status'] = config('manage.project_pay_status');
         $data['customer'] = Db::table('customer')->whereNull('deleted_at')->orderBy('id', 'desc')->pluck('username', 'id')->toArray();
         $data['adminer'] = Db::table('admin_role')->leftJoin('admin', 'admin_role.admin_id', '=', 'admin.id')
-                        ->where([['admin_role.role_id', 2], ['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
+                        ->where([['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
         return view('Manage.project', ['title' => '项目列表', 'data' => json_encode($data)]);
     }
 
@@ -38,13 +38,13 @@ class ProjectController extends SecondController {
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
         $request->filled('name') && $where[] = ['project.name', 'like', '%' . $request->name . '%'];
-        $request->filled('customer_name') && $where[] = ['project.customer_name', 'like', '%' . $request->customer_name . '%'];
+        $request->filled('customer_id') && $where[] = ['project.customer_id', $request->customer_name];
 //        $request->filled('phone') && $where[] = ['project.phone', 'like', '%' . $request->phone . '%'];
-        $request->filled('admin_name') && $where[] = ['project.admin_name', 'like', '%' . $request->admin_name . '%'];
+        $request->filled('admin_id') && $where[] = ['project.admin_id', $request->admin_id];
         $request->filled('type_id') && $where[] = ['project.type_id', $request->type_id];
         $request->filled('status') && $where[] = ['project.status', $request->status];
         $request->filled('payment_status') && $where[] = ['project.payment_status', $request->payment_status];
-        
+
         $total = ProjectsModel::where($where);
         $lists = ProjectsModel::selectRaw('project.*, count(records.project_id) total')
                 ->leftJoin('records', 'project.id', '=', 'records.project_id')
@@ -70,39 +70,39 @@ class ProjectController extends SecondController {
     public function addproject(Request $request) {
         if (!$request->isMethod('post')) {
             $this->returnMsg['msg'] = '请求方式有误!';
-        }else if (!$request->filled('name')) {
+        } else if (!$request->filled('name')) {
             $this->returnMsg['msg'] = '项目名为必填项!';
-        }else if (!$request->filled('customer_id')) {
+        } else if (!$request->filled('customer_id')) {
             $this->returnMsg['msg'] = '客户为必选项!';
-        }else if (!$request->filled('type_id')) {
+        } else if (!$request->filled('type_id')) {
             $this->returnMsg['msg'] = '项目类型必选项!';
-        }else if (!$request->filled('status')) {
+        } else if (!$request->filled('status')) {
             $this->returnMsg['msg'] = '项目状态必选项!';
-        }else if (!$request->filled('note')) {
+        } else if (!$request->filled('note')) {
             $this->returnMsg['msg'] = '需求说明为必选填项!';
         }
-        
-        if($this->returnMsg['msg'] != ''){
+
+        if ($this->returnMsg['msg'] != '') {
             $this->returnMsg['code'] = 304;
             return json_encode($this->returnMsg);
         }
-        
-        
+
+
         $savedata = [];
         $savedata['name'] = $request->name;
         $savedata['customer_id'] = $request->customer_id;
         $savedata['customer_name'] = Db::table('customer')->where('id', $request->customer_id)->value('username');
         $savedata['type_id'] = $request->type_id;
-        
+
         $request->filled('status') && $savedata['status'] = $request->status;
         $request->filled('develop_date') && $savedata['develop_date'] = $request->develop_date;
         $request->filled('deliver_date') && $savedata['deliver_date'] = $request->deliver_date;
         $request->filled('payment_status') && $savedata['payment_status'] = $request->payment_status;
         $request->filled('is_bid') && $savedata['is_bid'] = $request->is_bid;
-        
+
         $request->filled('admin_id') && $savedata['admin_id'] = $request->admin_id;
         $request->filled('admin_id') && $savedata['admin_name'] = Db::table('admin')->where('id', $request->admin_id)->value('name');
-        
+// return json_encode($savedata);       
         $savedata['note'] = $request->note;
         $request->filled('remarks') && $savedata['remarks'] = $request->remarks;
 
@@ -115,7 +115,7 @@ class ProjectController extends SecondController {
             $savedata['create_time'] = time();
             $msg = ProjectsModel::insert($savedata);
         }
-//return json_encode($savedata);
+
         if ($msg == true) {
             $this->returnMsg['msg'] = '成功!';
         } else {
@@ -133,7 +133,7 @@ class ProjectController extends SecondController {
             $this->returnMsg['msg'] = '提交参数有误!';
             return $this->returnMsg;
         }
-        
+
         $infos = ProjectsModel::where('id', $request->project_id)->first();
 
 //            $infos->show_status=$this->customer_status[$infos->status];

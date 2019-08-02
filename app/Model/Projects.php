@@ -33,12 +33,14 @@ class Projects extends Model {
     
     
     public function getCreateTimeAttribute($value){
-        return $value ? date('Y-m-d H:i:s', $value) : '';
+        return $value ? date('Y-m-d', $value) : '';
     }
 
     public function getLastTimeAttribute($value){
-        return $value ? date('Y-m-d H:i:s', $value) : '';
+        return $value ? date('Y-m-d', $value) : '';
     }
 
-    
+    public function getTypeIdAttribute($value){
+        return $value ? explode(',', $value) : '';
+    }
 }

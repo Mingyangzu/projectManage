@@ -22,7 +22,7 @@ class PackageController extends SecondController {
     public function index() {
         $data = [];
         $data['adminer'] = Db::table('admin_role')->leftJoin('admin', 'admin_role.admin_id', '=', 'admin.id')
-                        ->where([['admin_role.role_id', 2], ['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
+                        ->where([['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
         $data['project'] = Db::table('project')->whereBetween('status', [1, 10])->whereNull('deleted_at')->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
         return view('Manage.package', ['title' => '项目程序包列表', 'data' => json_encode($data)]);
     }
@@ -32,8 +32,8 @@ class PackageController extends SecondController {
         $page = $request->page <= 1 ? 0 : $request->page - 1;
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
-        $request->filled('project_name') && $where[] = ['packages.project_name', 'like', '%' . $request->project_name . '%'];
-//        $request->filled('input_id') && $where[] = ['packages.input_id', $request->input_id];
+        $request->filled('project_id') && $where[] = ['packages.project_id', $request->project_id];
+        $request->filled('input_id') && $where[] = ['packages.input_id', $request->input_id];
 
         $total = PackageModel::where($where);
         $lists = PackageModel::selectRaw('packages.*')->where($where);

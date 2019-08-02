@@ -33,6 +33,8 @@ alter table project add deleted_at int comment'软删除';
 alter table project add input_id int comment'录入人id' after is_bid;
 alter table project add input_name char(32) comment'录入人名' after input_id;
 
+alter table tuomei.project change payment_status payment_status tinyint default 0 comment'付款状态: 0 未付款、1 预付款已收、2 中款1已收、3 中款2已收、4 中款3已收、5 中款4已收、9尾款已收';
+alter table tuomei.project change type_id type_id set('App', 'Web', '小程序', '公众号', '网站', '商城') comment'项目类型：App,Web,小程序,公众号,网站,商城' ;
 
 
 /* records  */

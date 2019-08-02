@@ -10,10 +10,16 @@
 <div class="demoTable">
     <form class="layui-form layui-form-item" action="" onsubmit="return false;">
         <div class="layui-inline">
-            <input class="layui-input" name="project_name" id="demoReload" placeholder="项目名" >
+            <select name="project_id" class="layui-input"  lay-search>
+                <option value="">项目名</option>
+                <?php foreach (json_decode($data)->project as $k => $v) { ?>
+                    <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                <?php } ?>
+            </select>
         </div>
+        
         <div class="layui-inline">
-            <select name="customer_id" class="layui-input" >
+            <select name="customer_id" class="layui-input"  lay-search>
                 <option value="">签约客户</option>
                 <?php foreach (json_decode($data)->customer as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
