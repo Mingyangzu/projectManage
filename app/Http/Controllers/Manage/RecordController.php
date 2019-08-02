@@ -104,6 +104,12 @@ class RecordController extends SecondController {
             $lists = $lists->whereBetween('records.record_at', [strtotime($ctimearr[0]), strtotime($ctimearr[1])]);
             $total = $total->whereBetween('records.record_at', [strtotime($ctimearr[0]), strtotime($ctimearr[1])]);
         }
+        
+        // 非超级管理员 只能查看属于自己的数据
+        if ($this->arr_login_user['is_super'] != 1) {
+            $total = $total->where('records.input_id', $this->arr_login_user['id']);
+            $list = $list->where('records.input_id', $this->arr_login_user['id']);
+        }
 
         if ($request->actiontype == 'notlist') {
             $lists = $lists->orderBy('records.id', 'desc')->get();

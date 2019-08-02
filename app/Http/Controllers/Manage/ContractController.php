@@ -52,6 +52,12 @@ class ContractController extends SecondController {
             $total = $total->whereBetween('contract.take_effect_time', [strtotime($ctimearr[0]), strtotime($ctimearr[1])]);
         }
 
+        // 非超级管理员 只能查看属于自己的数据
+        if ($this->arr_login_user['is_super'] != 1) {
+            $total = $total->where('contract.input_id', $this->arr_login_user['id']);
+            $list = $list->where('contract.input_id', $this->arr_login_user['id']);
+        }
+        
         if ($request->actiontype == 'notlist') {
             $lists = $lists->orderBy('contract.id', 'desc')->get();
         } else {

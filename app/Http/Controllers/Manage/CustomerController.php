@@ -58,6 +58,12 @@
                 $total = $total->whereBetween('customer.create_time', [strtotime($ctimearr[0]), strtotime($ctimearr[1])]);
             }
             
+            // 非超级管理员 只能查看属于自己的数据
+            if($this->arr_login_user['is_super'] != 1){
+                $total = $total->where('customer.admin_id', $this->arr_login_user['id']);
+                $list = $list->where('customer.admin_id', $this->arr_login_user['id']);
+            }
+            
             $total = $total->count();
             $lists = $lists->groupBy('customer.id')->orderBy('customer.id', 'desc')->offset($page * $limit)->take($limit)->get();
 //       dump(DB::getQueryLog());  

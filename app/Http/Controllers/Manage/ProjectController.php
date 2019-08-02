@@ -41,7 +41,6 @@ class ProjectController extends SecondController {
         $request->filled('customer_id') && $where[] = ['project.customer_id', $request->customer_name];
 //        $request->filled('phone') && $where[] = ['project.phone', 'like', '%' . $request->phone . '%'];
         $request->filled('admin_id') && $where[] = ['project.admin_id', $request->admin_id];
-        $request->filled('type_id') && $where[] = ['project.type_id', $request->type_id];
         $request->filled('status') && $where[] = ['project.status', $request->status];
         $request->filled('payment_status') && $where[] = ['project.payment_status', $request->payment_status];
 
@@ -50,6 +49,19 @@ class ProjectController extends SecondController {
                 ->leftJoin('records', 'project.id', '=', 'records.project_id')
                 ->where($where);
         $lists = $lists->whereNull('records.deleted_at');
+        
+        if($request->filled('type_id')){
+            foreach (explode(',', $request->type_id) as $v){
+                $total = $total->whereRaw("FIND_IN_SET('".$v."',project.type_id)");
+                $lists = $lists->whereRaw("FIND_IN_SET('".$v."',project.type_id)");
+            }
+        }
+
+        // 非超级管理员 只能查看属于自己的数据
+        if ($this->arr_login_user['is_super'] != 1) {
+            $total = $total->where('project.admin_id', $this->arr_login_user['id']);
+            $list = $list->where('project.admin_id', $this->arr_login_user['id']);
+        }
 
         if ($request->filled('deliver_date')) {
             $ctimearr = explode('@', $request->deliver_date);

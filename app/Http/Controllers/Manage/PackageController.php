@@ -44,6 +44,12 @@ class PackageController extends SecondController {
             $total = $total->whereBetween('packages.created_at', [strtotime($ctimearr[0]), strtotime($ctimearr[1])]);
         }
 
+        // 非超级管理员 只能查看属于自己的数据
+        if ($this->arr_login_user['is_super'] != 1) {
+            $total = $total->where('packages.input_id', $this->arr_login_user['id']);
+            $list = $list->where('packages.input_id', $this->arr_login_user['id']);
+        }
+        
         if ($request->actiontype == 'notlist') {
             $lists = $lists->orderBy('packages.id', 'desc')->get();
         } else {
