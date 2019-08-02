@@ -32,6 +32,7 @@
             $data['type'] = config('manage.customer_type');
             $data['adminer'] = Db::table('admin_role')->leftJoin('admin', 'admin_role.admin_id', '=', 'admin.id')
                         ->where([['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
+            $data['is_superadmin'] = $this->arr_login_user['name'] == 'tuomei' ? true : false;
             return view('Manage.customer',['title' => '客户列表', 'data' => json_encode($data)]);
         }
         
@@ -105,9 +106,13 @@
             $request->filled('wechat') && $savedata['wechat'] = $request->wechat;
             $request->filled('position') && $savedata['position'] = $request->position;
             $request->filled('remarks') && $savedata['remarks'] = $request->remarks;
-            
+         
             if($request->filled('editid')){
                 $savedata['last_time'] = time();
+                if($this->arr_login_user['name'] == 'tuomei' && $request->filled('admin_id')){
+                    $savedata['admin_id'] = $request->admin_id;
+                    $savedata['admin_name'] = Db::table('admin')->where('id', $request->admin_id)->value('name');
+                }
                 $msg = CustomerModel::where('id', $request->editid)->update($savedata);
             }else{
                 $savedata['admin_id'] = $this->arr_login_user['id'];

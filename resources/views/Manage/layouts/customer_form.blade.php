@@ -82,10 +82,15 @@
             </div>
         </div>
 
-        <div class="layui-form-item detailevent" style='display:none'> 
+        <div class="layui-form-item editdetailevent" style='display:none'> 
             <label class="layui-form-label">录入人</label>
-            <div class="layui-input-inline">     
-                <input class="layui-input" name="adminer" id="demoReload" placeholder="" >
+            <div class="layui-input-inline">
+                <select name="admin_id" class="layui-input" lay-search>
+                <option value="">录入人</option>
+                <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
+                    <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                <?php } ?>
+            </select>
             </div>
         </div> 
 

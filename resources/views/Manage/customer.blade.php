@@ -143,6 +143,7 @@
                 case 'edit':
                     getInfomsg(obj.data.id, '/getcustomer');
                     $('.detailevent').css({display: 'none'});
+                    $('.editdetailevent').css({display: sysdata.is_superadmin ? 'block' : 'none'});
                     $('.editevent').css({display: 'block'});
                     var index = layer.open({
                         type: 1,
@@ -160,6 +161,7 @@
                 case 'detail':
                     getInfomsg(obj.data.id, '/getcustomer');
                     $('.detailevent').css({display: 'block'});
+                    $('.editdetailevent').css({display: 'block'});
                     $('.editevent').css({display: 'none'});
                     var index = layer.open({
                         type: 1,
@@ -254,7 +256,7 @@
                 , "wechat": data.wechat
                 , "position": data.position
                 , "remarks": data.remarks
-                , "adminer": data.admin_name
+                , "admin_id": data.admin_id
                 , "createtime": data.create_time
                 , "lasttime": data.last_time
             });
@@ -289,6 +291,7 @@
         $('#addCustomer').click(function () {
             formval({});
             $('.detailevent').css({display: 'none'});
+            $('.editdetailevent').css({display: 'none'});
             $('.editevent').css({display: 'block'});
             var index = layer.open({
                 type: 1,
