@@ -87,7 +87,7 @@ class RecordController extends SecondController {
     }
 
     public function getrecordlist(Request $request) {
-        $page = $request->filled('page') <= 1 ? 0 : $request->page - 1;
+        $page = $request->page <= 1 ? 0 : $request->page - 1;
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
         $request->filled('project_name') && $where[] = ['records.project_name', 'like', '%' . $request->name . '%'];
@@ -108,7 +108,7 @@ class RecordController extends SecondController {
             $lists = $lists->orderBy('records.id', 'desc')->get();
         } else {
             $total = $total->count();
-            $lists = $lists->orderBy('records.id', 'desc')->skip($page * $limit)->take($limit)->get();
+            $lists = $lists->orderBy('records.id', 'desc')->offset($page * $limit)->take($limit)->get();
             $this->returnMsg['total'] = $total;
         }
 //       dump(DB::getQueryLog());  

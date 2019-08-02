@@ -29,7 +29,7 @@ class PackageController extends SecondController {
 
     // 项目包列表
     public function packagelist(Request $request) {
-        $page = $request->filled('page') <= 1 ? 0 : $request->page - 1;
+        $page = $request->page <= 1 ? 0 : $request->page - 1;
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
         $request->filled('project_name') && $where[] = ['packages.project_name', 'like', '%' . $request->project_name . '%'];
@@ -48,7 +48,7 @@ class PackageController extends SecondController {
             $lists = $lists->orderBy('packages.id', 'desc')->get();
         } else {
             $total = $total->count();
-            $lists = $lists->orderBy('packages.id', 'desc')->skip($page * $limit)->take($limit)->get();
+            $lists = $lists->orderBy('packages.id', 'desc')->offset($page * $limit)->take($limit)->get();
             $this->returnMsg['total'] = $total;
         }
 

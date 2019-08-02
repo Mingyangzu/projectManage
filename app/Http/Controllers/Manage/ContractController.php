@@ -35,7 +35,7 @@ class ContractController extends SecondController {
 
     // 合同信息列表
     public function contractlist(Request $request) {
-        $page = $request->filled('page') <= 1 ? 0 : $request->page - 1;
+        $page = $request->page <= 1 ? 0 : $request->page - 1;
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
         $request->filled('project_name') && $where[] = ['project.name', 'like', '%' . $request->project_name . '%'];
@@ -56,7 +56,7 @@ class ContractController extends SecondController {
             $lists = $lists->orderBy('contract.id', 'desc')->get();
         } else {
             $total = $total->count();
-            $lists = $lists->orderBy('contract.id', 'desc')->skip($page * $limit)->take($limit)->get();
+            $lists = $lists->orderBy('contract.id', 'desc')->offset($page * $limit)->take($limit)->get();
             $this->returnMsg['total'] = $total;
         }
 

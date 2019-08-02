@@ -34,8 +34,8 @@
         }
         
         public function customerlist(Request $request){
-//            DB::connection()->enableQueryLog();
-            $page = $request->filled('page') <= 1 ? 0 : $request->page - 1;
+            DB::connection()->enableQueryLog();
+            $page = $request->page <= 1 ? 0 : $request->page - 1;
             $limit = $request->filled('limit') ? 10 : $request->limit;
             $where = [];
             $request->filled('username') && $where[] = ['customer.username', 'like', '%'.$request->username.'%'];
@@ -56,15 +56,15 @@
             }
             
             $total = $total->count();
-            $lists = $lists->groupBy('customer.id')->orderBy('customer.id', 'desc')->skip($page * $limit)->take($limit)->get();
-//       dump(DB::getQueryLog());  
+            $lists = $lists->groupBy('customer.id')->orderBy('customer.id', 'desc')->offset($page * $limit)->take($limit)->get();
+       dump(DB::getQueryLog());  
             $this->returnMsg['total'] = $total;
             $this->returnMsg['data'] = $lists;
             $this->returnMsg['msg'] = 'success';
             return json_encode($this->returnMsg);
         }
         
-        // 添加客户
+        // 添加/编辑客户
         public function addcustomer(Request $request){
             if(!$request->isMethod('post')){
                 $this->returnMsg['code'] = 304;
@@ -288,97 +288,7 @@
         }
 
        
-        /**
-         *更新客户信息
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        public function update_customer()
-        {
-            $customer_table=config('constants.CUSTOMER');
-            $arr_update=self::pub_add_update();
-            $customer_id=trim(Input::get('customer_id'));
-            if($arr_update['phone']!='')
-            {
-                $obj_customer=DB::table($customer_table)->select('id')->where([['phone',$arr_update['phone']],['status',1],['id','<>',$customer_id]])->first();//查询客户手机号是否存在
-                if($obj_customer!=NULL)
-                {
-                    $this->arr_return['message']='客户手机号已存在';
-                    $this->arr_return['error_input']='modal_customer_tel';
-                    return json_encode($this->arr_return);
-                }
-
-            }
-
-            if($arr_update['landline']!='')
-            {
-                $obj_customer=DB::table($customer_table)->select('id')->where([['landline',$arr_update['landline']],['status',1],['id','<>',$customer_id]])->first();//查询客户座机是否存在
-                if($obj_customer!=NULL)
-                {
-                    $this->arr_return['message']='客户座机已存在';
-                    $this->arr_return['error_input']='modal_customer_landline';
-                    return json_encode($this->arr_return);
-                }
-
-            }
-
-            $arr_update['last_time'] = time();
-
-            unset($arr_update['customer_id']);
-            DB::table($customer_table)
-                ->where('id', $customer_id)
-                ->update($arr_update);
-
-            $this->arr_return['status'] = 1;
-            $this->arr_return['message'] = '修改成功';
-            return json_encode($this->arr_return);
-        }
-
-        /**
-         * 添加客户信息
-         * @author tuomeikeji
-         * @time 2019-04-18
-         */
-        public function add_customer()
-        {
-            $customer_table=config('constants.CUSTOMER');
-            $arr_update=self::pub_add_update();
-            if($arr_update['phone']!='')
-            {
-                $obj_customer=DB::table($customer_table)->select('id')->where([['phone',$arr_update['phone']],['status',1]])->first();//查询客户手机号是否存在
-                if($obj_customer!=NULL)
-                {
-                    $this->arr_return['message']='客户手机号已存在';
-                    $this->arr_return['error_input']='modal_customer_tel';
-                    return json_encode($this->arr_return);
-                }
-            }
-
-            if($arr_update['landline']!='')
-            {
-                $obj_customer=DB::table($customer_table)->select('id')->where([['landline',$arr_update['landline']],['status',1]])->first();//查询客户座机是否存在
-                if($obj_customer!=NULL)
-                {
-                    $this->arr_return['message']='客户座机已存在';
-                    $this->arr_return['error_input']='modal_customer_landline';
-                    return json_encode($this->arr_return);
-                }
-            }
-            unset($arr_update['customer_id']);
-            $arr_update['last_time'] = time();
-            $arr_update['create_time'] = time();
-//            var_dump($arr_update);die;
-            $insert_id=DB::table($customer_table)->insertGetId($arr_update);
-            if($insert_id>0)
-            {
-                $this->arr_return['status'] = 1;
-                $this->arr_return['message'] = '添加成功';
-                return json_encode($this->arr_return);
-            }
-            $this->arr_return['message'] = '添加失败';
-            return json_encode($this->arr_return);
-        }
-
+       
         /**
          * 收集客户信息
          * @author tuomeikeji

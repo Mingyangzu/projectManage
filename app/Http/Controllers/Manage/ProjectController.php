@@ -34,7 +34,7 @@ class ProjectController extends SecondController {
 
     public function projectlist(Request $request) {
 //            DB::connection()->enableQueryLog();
-        $page = $request->filled('page') <= 1 ? 0 : $request->page - 1;
+        $page = $request->page <= 1 ? 0 : $request->page - 1;
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
         $request->filled('name') && $where[] = ['project.name', 'like', '%' . $request->name . '%'];
@@ -58,7 +58,7 @@ class ProjectController extends SecondController {
         }
 
         $total = $total->count();
-        $lists = $lists->groupBy('project.id')->orderBy('project.id', 'desc')->skip($page * $limit)->take($limit)->get();
+        $lists = $lists->groupBy('project.id')->orderBy('project.id', 'desc')->offset($page * $limit)->take($limit)->get();
 //       dump(DB::getQueryLog());  
         $this->returnMsg['total'] = $total;
         $this->returnMsg['data'] = $lists;
