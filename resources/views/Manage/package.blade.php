@@ -149,8 +149,8 @@
                     layer.confirm('确定要删除该项目程序包?', {icon: 3, title: '删除项目程序包'}, function (index) {
                         $.ajax({
                             url: '/delpackage',
-                            data: {_token: "{{ csrf_token() }}", packages_id: obj.data.id},
-                            type: 'delete',
+                            data: {_token: "{{ csrf_token() }}", _method: 'DELETE', packages_id: obj.data.id},
+                            type: 'post',
                             dataType: 'json',
                             success: function (res) {
                                 if (res.code == 200) {

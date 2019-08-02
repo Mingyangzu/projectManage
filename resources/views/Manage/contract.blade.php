@@ -148,8 +148,8 @@
                     layer.confirm('确定要删除该合同记录?', {icon: 3, title: '删除合同'}, function (index) {
                         $.ajax({
                             url: '/delcontract',
-                            data: {_token: "{{ csrf_token() }}", contract_id: obj.data.id},
-                            type: 'delete',
+                            data: {_token: "{{ csrf_token() }}", _method: 'DELETE',contract_id: obj.data.id},
+                            type: 'post',
                             dataType: 'json',
                             success: function (res) {
                                 if (res.code == 200) {

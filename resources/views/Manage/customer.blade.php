@@ -35,6 +35,14 @@
             </select>
         </div>
         <div class="layui-inline">
+            <select name="gender" class="layui-input" >
+                <option value="">性别</option>
+                <?php foreach (config('manage.gender') as $k => $v) { ?>
+                    <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                <?php } ?>
+            </select>
+        </div>
+        <div class="layui-inline">
             <input class="layui-input" name="create_time" id="formdate" placeholder="创建时间" >
         </div>
         <button class="layui-btn" data-type="reload" lay-submit lay-filter="formDemo">搜索</button>
@@ -183,8 +191,8 @@
                     layer.confirm('确定要删除该用户?', {icon: 3, title: '删除用户'}, function(index){
                         $.ajax({
                             url: '/delcustomer',
-                            data: {_token: "{{ csrf_token() }}", customer_id: obj.data.id},
-                            type: 'delete',
+                            data: {_token: "{{ csrf_token() }}", _method: 'DELETE', customer_id: obj.data.id},
+                            type: 'post',
                             dataType: 'json',
                             success: function(res){
                                 if(res.code == 200){
@@ -236,6 +244,7 @@
                 'editid': data.id
                 , "username": data.username
                 , "type": data.type
+                , "gender": data.gender
                 , "is_new_customer": data.is_new_customer
                 , "source": data.source
                 , "company": data.company

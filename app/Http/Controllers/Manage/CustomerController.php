@@ -45,6 +45,7 @@
             $request->filled('admin_id') && $where[] = ['customer.admin_id', $request->admin_id];
             $request->filled('phone') && $where[] = ['customer.phone', 'like', '%'. $request->phone .'%'];
             $request->filled('source') && $where[] = ['customer.source', $request->source];
+            $request->filled('gender') && $where[] = ['customer.gender', $request->gender];
             
             $total = CustomerModel::where($where);
             $lists = CustomerModel::selectRaw('customer.*, count(project.customer_id) total')
@@ -93,6 +94,7 @@
             
             $savedata = [];
             $savedata['username'] = $request->username;
+            $savedata['gender'] = $request->gender;
             $request->filled('is_new_customer') && $savedata['is_new_customer'] = $request->is_new_customer;
             $request->filled('type') && $savedata['type'] = $request->type;
             $request->filled('source') && $savedata['source'] = $request->source;

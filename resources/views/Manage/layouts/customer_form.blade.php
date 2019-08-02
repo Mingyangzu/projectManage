@@ -7,7 +7,15 @@
             <div class="layui-input-inline" >
                 <input class="layui-input" lay-verify="required" name="username" placeholder="" >
             </div>
-
+        </div>
+        
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-inline" style='border: 1px solid #e6e6e6;height: 36px;'>
+                <input  type="radio" name="gender" value="0" title="女" checked>
+                <input type="radio" name="gender" value="1" title="男" >
+            </div>
+            
             <label class="layui-form-label">老客户</label>
             <div class="layui-input-inline" style='border: 1px solid #e6e6e6;height: 36px;'>
                 <input  type="radio" name="is_new_customer" value="0" title="否" checked>

@@ -239,8 +239,8 @@
                     layer.confirm('确定要删除该项目?', {icon: 3, title: '删除项目'}, function (index) {
                         $.ajax({
                             url: '/delproject',
-                            data: {_token: "{{ csrf_token() }}", project_id: obj.data.id},
-                            type: 'delete',
+                            data: {_token: "{{ csrf_token() }}", _method: 'DELETE', project_id: obj.data.id},
+                            type: 'post',
                             dataType: 'json',
                             success: function (res) {
                                 if (res.code == 200) {

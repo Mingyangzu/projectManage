@@ -14,6 +14,7 @@ alter table tuomei.contract change column `describe` `describe` text null commen
 /* customer  */
 alter table customer add admin_name char(32) comment'业务员名' after admin_id;
 alter table customer add deleted_at int  comment'软删除'; 
+alter table tuomei.customer add gender tinyint default 1 comment' 0 女 ，1 男' after username ;
 
 /* project  */
 alter table project add admin_name char(32) comment'业务员名' after admin_id;
@@ -50,8 +51,8 @@ CREATE TABLE IF NOT EXISTS `records` (
   `result` text  comment'沟通结果',
   `question` text  comment'遗留问题',
   `record_at` int comment '沟通时间',
-  `create_at` int comment '添加时间',
-  `update_at` int comment '修改时间',
+  `created_at` int comment '添加时间',
+  `updated_at` int comment '修改时间',
   `deleted_at` int comment '软删除',
   PRIMARY KEY (`id`),
   key `projectid` (`project_id`)
