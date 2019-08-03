@@ -366,6 +366,8 @@
 
         //监听提交
         form.on('submit(subform)', function (data) {
+            $('#subform').addClass('layui-btn-disabled');
+            $('#subform').attr('disabled', 'disabled');
             $.ajax({
                 url: '/addproject',
                 data: data.field,
@@ -378,19 +380,23 @@
                             icon: 1
                         });
                         table.reload('projecttable', {});
+                        formval({});
                     } else {
                         layer.msg(res.msg, {
                             icon: 5
                         });
                         return false;
                     }
+                   $('#subform').removeClass('layui-btn-disabled');
+                   $('#subform').removeAttr('disabled'); 
                 }
             });
             return false;
         });
 
         form.on('submit(recordsubform)', function (data) {
-            console.log(data);
+            $('#recordsubform').addClass('layui-btn-disabled');
+            $('#recordsubform').attr('disabled', 'disabled');
             $.ajax({
                 url: '/addrecord',
                 data: data.field,
@@ -410,6 +416,8 @@
                         });
                         return false;
                     }
+                   $('#recordsubform').removeClass('layui-btn-disabled');
+                   $('#recordsubform').removeAttr('disabled'); 
                 }
             });
             return false;

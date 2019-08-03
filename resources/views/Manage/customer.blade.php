@@ -309,7 +309,6 @@
 
         //监听提交
         form.on('submit(subform)', function (data) {
-//                    layer.msg(JSON.stringify(data.field));
             if (!data.field.username) {
                 layer.msg('客户名不能为空!');
                 return false;
@@ -318,6 +317,8 @@
                 layer.msg('联系电话、座机、微信号至少填一个!');
                 return false;
             }
+            $('#subform').addClass('layui-btn-disabled');
+            $('#subform').attr('disabled', 'disabled');
             $.ajax({
                 url: '/addcustomer',
                 data: data.field,
@@ -329,6 +330,7 @@
                         layer.msg("成功", {
                             icon: 1
                         });
+                        formval({});
                         table.reload('customertable', {});
                     } else {
                         layer.msg(res.msg, {
@@ -336,6 +338,8 @@
                         });
                         return false;
                     }
+                   $('#subform').removeClass('layui-btn-disabled');
+                   $('#subform').removeAttr('disabled'); 
                 }
             });
             return false;

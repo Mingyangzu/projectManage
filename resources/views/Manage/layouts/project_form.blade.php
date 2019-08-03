@@ -113,7 +113,7 @@
         <div class="layui-form-item  editevent">
             <div class="layui-input-block">
                 {{ csrf_field() }}
-                <button class="layui-btn" lay-submit="" lay-filter="subform">立即提交</button>
+                <button class="layui-btn" id="subform" lay-submit="" lay-filter="subform">立即提交</button>
             </div>
         </div>
     </form>

@@ -208,7 +208,8 @@
 
 
         form.on('submit(recordsubform)', function (data) {
-            console.log(data);
+            $('#recordsubform').addClass('layui-btn-disabled');
+            $('#recordsubform').attr('disabled', 'disabled');
             $.ajax({
                 url: '/addrecord',
                 data: data.field,
@@ -216,7 +217,7 @@
                 dataType: 'json',
                 success: function (res) {
                     if (res.code == 200) {
-                        layer.closeAll();
+//                        layer.closeAll();
                         layer.msg("成功", {
                             icon: 1
                         });
@@ -228,6 +229,8 @@
                         });
                         return false;
                     }
+                   $('#recordsubform').removeClass('layui-btn-disabled');
+                   $('#recordsubform').attr('disabled', ''); 
                 }
             });
             return false;

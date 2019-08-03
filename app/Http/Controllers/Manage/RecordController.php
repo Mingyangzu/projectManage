@@ -88,10 +88,10 @@ class RecordController extends SecondController {
     }
 
     public function getrecordlist(Request $request) {
+//         DB::connection()->enableQueryLog();
         $page = $request->page <= 1 ? 0 : $request->page - 1;
         $limit = $request->filled('limit') ? 10 : $request->limit;
         $where = [];
-        $request->filled('project_id') && $where[] = ['records.project_id', $request->name];
         $request->filled('input_id') && $where[] = ['records.input_id', $request->input_id];
         $request->filled('customer_id') && $where[] = ['records.customer_id', $request->customer_id];
         $request->filled('project_id') && $where[] = ['records.project_id', $request->project_id];

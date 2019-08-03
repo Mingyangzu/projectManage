@@ -50,8 +50,9 @@
             
             $total = CustomerModel::where($where);
             $lists = CustomerModel::selectRaw('customer.*, count(project.customer_id) total')
-                    ->leftJoin('project', 'customer.id', '=', 'project.customer_id')
-                    ->whereNull('project.deleted_at')
+                    ->leftJoin('project', function($join){
+                        $join->on('customer.id', '=', 'project.customer_id')->whereNull('project.deleted_at');
+                    })
                     ->where($where);
             
             if($request->filled('create_time')){
@@ -63,7 +64,10 @@
             // 非超级管理员 只能查看属于自己的数据
             if($this->arr_login_user['is_super'] != 1){
                 $total = $total->where('customer.admin_id', $this->arr_login_user['id']);
-                $list = $list->where('customer.admin_id', $this->arr_login_user['id']);
+                $list = $list->where([
+                    ['customer.admin_id', $this->arr_login_user['id']],
+                    ['project.admin_id', $this->arr_login_user['id']]
+                ]);
             }
             
             $total = $total->count();

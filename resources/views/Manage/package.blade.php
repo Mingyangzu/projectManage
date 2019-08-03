@@ -251,7 +251,8 @@
 
         $('#subform').click(function () {
             form.on('submit(contractform)', function (data) {
-                console.log(data);
+                $('#subform').addClass('layui-btn-disabled');
+                $('#subform').attr('disabled', 'disabled');
                 $.ajax({
                     url: '/addpackage',
                     data: data.field,
@@ -271,6 +272,8 @@
                             });
                             return false;
                         }
+                        $('#subform').removeClass('layui-btn-disabled');
+                        $('#subform').removeAttr('disabled'); 
                     }
                 });
                 return false;
