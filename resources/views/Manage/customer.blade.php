@@ -271,7 +271,7 @@
                 str += '<h3 class="layui-timeline-title">' + data[i]['created_date'] + '<em>' + data[i]['name'] + '</em> </h3>';
                 str += '<p> <ul>';
                 str += '<li> 类型: ' + data[i]['type_id'] + '</li>';
-                str += '<li> 项目进度: ' + data[i]['status'] + '</li>';
+                str += '<li> 项目状态: ' + data[i]['status'] + '</li>';
                 str += !data[i]['deliver_date'] ? '' : '<li> 交付日期: ' + data[i]['deliver_date'] + ' &nbsp;&nbsp; 剩余'+ data[i]['surplus'] +'天'+ '</li>';
                 str += !data[i]['remarks'] ? '' : '<p> 项目说明: ' + data[i]['remarks'] + ' </p>';
                 str += !data[i]['note'] ? '' : '<p> 项目需求: ' + data[i]['note'] + ' </p>';

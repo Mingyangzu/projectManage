@@ -38,7 +38,7 @@
         
         <div class="layui-input-inline">
             <select name="status" class="layui-select" >
-                <option value="">项目进度</option>
+                <option value="">项目状态</option>
                 <?php foreach (json_decode($data)->status as $key => $val) { ?>
                     <option value="<?php echo $key ?>"><?php echo $val ?></option>
                 <?php } ?>
