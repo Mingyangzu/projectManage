@@ -103,6 +103,7 @@
             $request->filled('is_new_customer') && $savedata['is_new_customer'] = $request->is_new_customer;
             $request->filled('type') && $savedata['type'] = $request->type;
             $request->filled('source') && $savedata['source'] = $request->source;
+            $request->filled('source_text') && $savedata['source_text'] = $request->source_text;
             $request->filled('company') && $savedata['company'] = $request->company;
             $request->filled('address') && $savedata['address'] = $request->address;
             $request->filled('phone') && $savedata['phone'] = $request->phone;

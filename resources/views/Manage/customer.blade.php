@@ -246,6 +246,7 @@
                 , "gender": data.gender
                 , "is_new_customer": data.is_new_customer
                 , "source": data.source
+                , "source_text": data.source_text
                 , "company": data.company
                 , "address": data.address
                 , "phone": data.phone

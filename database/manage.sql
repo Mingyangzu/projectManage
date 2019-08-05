@@ -15,6 +15,8 @@ alter table tuomei.contract change column `describe` `describe` text null commen
 alter table customer add admin_name char(32) comment'业务员名' after admin_id;
 alter table customer add deleted_at int  comment'软删除'; 
 alter table tuomei.customer add gender tinyint default 1 comment' 0 女 ，1 男' after username ;
+alter table tuomei.customer add source_text varchar(64) comment'来源备注' after source;
+
 
 /* project  */
 alter table project add admin_name char(32) comment'业务员名' after admin_id;

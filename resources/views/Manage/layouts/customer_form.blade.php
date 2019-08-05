@@ -46,7 +46,9 @@
                     <?php } ?>
                 </select>
             </div>
+        </div>
 
+        <div class="layui-form-item" >
             <label class="layui-form-label">来源</label>
             <div class="layui-input-inline">
                 <select name="source" class="layui-input" >
@@ -55,6 +57,11 @@
                         <option value="<?php echo $k ?>"><?php echo $v ?></option>
                     <?php } ?>
                 </select>
+            </div>
+            
+            <label class="layui-form-label">来源备注</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" name="source_text" placeholder="">
             </div>
         </div>
 
