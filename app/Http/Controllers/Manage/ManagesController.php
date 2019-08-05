@@ -11,6 +11,7 @@
     use App\Rules\verfcount;
     
     use App\Model\Customer as CustomerModel;
+    use App\Model\Projects as ProjectsModel;
     use App\Model\Contract as ContractModel;
     
     
@@ -32,17 +33,16 @@
         {
            $datestr = strtotime(date('Y-m-01', time()));
             $total = [
-                'customer_total' => CustomerModel::count(),
-                'customer_month' => CustomerModel::where('create_time', '>=', $datestr)->count(),
-                'contract_total' => ContractModel::count(),
-                'contract_start' => ContractModel::where('status', 1)->count(),
-                'contract_working' => ContractModel::where('status', 4)->count(),  
-                'contract_end' => ContractModel::where('status', '>=', 9)->count(),
+                'customer_total' => CustomerModel::whereNull('deleted_at')->count(),
+                'customer_month' => CustomerModel::where('create_time', '>=', $datestr)->whereNull('deleted_at')->count(),
+                'project_total' => ProjectsModel::whereNull('deleted_at')->count(),
+                'project_start' => ProjectsModel::where('status', 1)->whereNull('deleted_at')->count(),
+                'project_working' => ProjectsModel::where('status', 4)->whereNull('deleted_at')->count(),  
+                'project_end' => ProjectsModel::where('status', '>=', 9)->whereNull('deleted_at')->count(),
                 'signing_month' => ContractModel::where([
-                    ['status', '>', 2],
                     ['create_time', '>=', $datestr],
-                ])->count(),
-                'signing_total' => ContractModel::where('status', '>', 2)->count(),
+                ])->whereNull('deleted_at')->count(),
+                'signing_total' => ContractModel::whereNull('deleted_at')->count(),
             ]; 
             return view('Manage.welcome',['title'=>'控制台', 'total' => $total]);
         }

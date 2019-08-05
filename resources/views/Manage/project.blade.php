@@ -111,15 +111,15 @@
             , cellMinWidth: 60
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
-                    , {field: 'name', title: '项目名', width: 150}
-                    , {field: 'customer_name', title: '客户名', width: 100}
-                    , {field: 'create_time', title: '录入日期', width: 120}
-                    , {field: 'last_time', title: '更新日期', width: 120}
-                    , {field: 'admin_name', title: '业务员', width: 100}
-                    , {field: 'total', title: '沟通记录数', width: 100, templet: function (d) {
+                    , {field: 'name', title: '项目名', width: 180}
+                    , {field: 'customer_name', title: '客户名', width: 80}
+                    , {field: 'create_time', title: '录入日期', width: 110}
+                    , {field: 'last_time', title: '更新日期', width: 110}
+                    , {field: 'admin_name', title: '业务员', width: 80}
+                    , {field: 'total', title: '沟通次数', width: 90, templet: function (d) {
                             return d.total > 0 ? '<a class="layui-btn layui-btn-xs" lay-event="recordlist"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>' : 0 ;
                         }}
-                    , {field: 'type_id', title: '类型', templet: '#types', width: 200, templet: function (d) {
+                    , {field: 'type_id', title: '类型', templet: '#types', width: 120, templet: function (d) {
                             var str = '';
                             for(var i in d.type_id){
                                 str += d.type_id[i] + ' ';
@@ -132,9 +132,9 @@
                     , {field: 'payment_status', title: '财务状态', width: 100, templet: function (d) {
                             return sysdata['pay_status'][d.payment_status];
                         }}
-                    , {field: 'develop_date', title: '开发日期', width: 120}
-                    , {field: 'deliver_date', title: '交付日期', width: 120}
-                    , {field: 'surplus', title: '剩余天数', width: 100}
+                    , {field: 'develop_date', title: '开发日期', width: 110}
+                    , {field: 'deliver_date', title: '交付日期', width: 110}
+                    , {field: 'surplus', title: '剩余天数', width: 90}
                     , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 230}
                 ]]
             , response: {

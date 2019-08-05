@@ -7,6 +7,19 @@
             <div class="layui-input-inline" >
                 <input class="layui-input" lay-verify="required" name="username" placeholder="" >
             </div>
+            
+            <div class="editdetailevent" style='display:none'> 
+            <label class="layui-form-label">归属业务员</label>
+            <div class="layui-input-inline">
+                <select name="admin_id" class="layui-input" lay-search>
+                <option value="">业务员</option>
+                <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
+                    <option value="<?php echo $k ?>"><?php echo $v ?></option>
+                <?php } ?>
+            </select>
+            </div>
+        </div> 
+
         </div>
         
         <div class="layui-form-item">
@@ -59,7 +72,7 @@
             </div>
         </div>
 
-        <div class="layui-form-item"  style=''>
+        <div class="layui-form-item">
             <label class="layui-form-label"> <em style='color:red;'>*</em> 联系电话</label>
             <div class="layui-input-inline">
                 <input class="layui-input" lay-verify="required|phone" name="phone" id="demoReload" placeholder="" >
@@ -82,18 +95,7 @@
             </div>
         </div>
 
-        <div class="layui-form-item editdetailevent" style='display:none'> 
-            <label class="layui-form-label">录入人</label>
-            <div class="layui-input-inline">
-                <select name="admin_id" class="layui-input" lay-search>
-                <option value="">录入人</option>
-                <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
-                    <option value="<?php echo $k ?>"><?php echo $v ?></option>
-                <?php } ?>
-            </select>
-            </div>
-        </div> 
-
+        
         <div class="layui-form-item detailevent" style='display:none'> 
             <label class="layui-form-label">添加时间</label>
             <div class="layui-input-inline">     

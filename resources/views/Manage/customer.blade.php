@@ -17,7 +17,7 @@
         </div>
         <div class="layui-inline">
             <select name="admin_id" class="layui-input" lay-search>
-                <option value="">业务员 输入文字筛选</option>
+                <option value="">归属业务员 输入文字筛选</option>
                 <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
                 <?php } ?>
@@ -91,24 +91,21 @@
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
                     , {field: 'username', title: '客户名', width: 80}
-                    , {field: 'create_time', title: '录入日期', width: 170}
-                    , {field: 'phone', title: '联系方式', width: 130}
-                    , {field: 'company', title: '公司名', }
                     , {field: 'position', title: '职位', width: 100}
-                    , {field: 'type', title: '类型', templet: '#types', width: 120}
+                    , {field: 'phone', title: '联系方式', width: 130}
+                    , {field: 'company', title: '公司名', width: 180}
+                    , {field: 'create_time', title: '录入日期', width: 110}
+                    , {field: 'type', title: '类型', templet: '#types', width: 80}
+                    , {field: 'admin_name', title: '归属业务员', width: 100}
                     , {field: 'total', title: '项目数', width: 80, sort: true, templet: function (d) {
-                            if (d.total > 0) {
-                                return '<a class="layui-btn layui-btn-xs" lay-event="project"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>';
-                            } else {
-                                return 0;
-                            }
+                            return d.total > 0 ? '<a class="layui-btn layui-btn-xs" lay-event="project"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>' : 0;
                         }}
                     , {field: 'is_new_customer', title: '老客户', templet: function (d) {
                             return d.is_new_customer == 1 ? '是' : '否';
                         }, width: 80}
                     , {field: 'source', title: '来源', templet: function (d) {
                             return  sources[d.source];
-                        }, width: 80}
+                        }, width: 130}
                     , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 160}
                 ]]
             , response: {

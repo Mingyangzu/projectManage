@@ -26,10 +26,10 @@
     </div>
     <div class="tjbox greenbox">
         <p class='titles'> 项目数 </p>
-        <p class='tjnums'> 跟踪中: {{$total['contract_start']}} </p>
-        <p class='tjnums'> 开发中: {{$total['contract_working']}} </p>
-        <p class='tjnums'> 已完结: {{$total['contract_end']}} </p>
-        <p class='tjnums'> 总计: {{$total['customer_total']}} </p>
+        <p class='tjnums'> 跟踪中: {{$total['project_start']}} </p>
+        <p class='tjnums'> 开发中: {{$total['project_working']}} </p>
+        <p class='tjnums'> 已完结: {{$total['project_end']}} </p>
+        <p class='tjnums'> 总计: {{$total['project_total']}} </p>
     </div>
     <div class="tjbox yellowbox">
         <p class='titles'> 签约数 </p>
