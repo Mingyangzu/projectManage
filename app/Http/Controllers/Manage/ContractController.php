@@ -36,7 +36,7 @@ class ContractController extends SecondController {
     // 合同信息列表
     public function contractlist(Request $request) {
         $page = $request->page <= 1 ? 0 : $request->page - 1;
-        $limit = $request->filled('limit') ? 10 : $request->limit;
+        $limit = $request->filled('limit') ? $request->limit : 10;
         $where = [];
         $request->filled('project_id') && $where[] = ['project.id', $request->project_id];
         $request->filled('title') && $where[] = ['contract.title', 'like', '%' . $request->title . '%'];

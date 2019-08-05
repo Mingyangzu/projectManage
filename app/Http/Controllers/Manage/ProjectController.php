@@ -35,7 +35,7 @@ class ProjectController extends SecondController {
     public function projectlist(Request $request) {
 //            DB::connection()->enableQueryLog();
         $page = $request->page <= 1 ? 0 : $request->page - 1;
-        $limit = $request->filled('limit') ? 10 : $request->limit;
+        $limit = $request->filled('limit') ? $request->limit : 10;
         $where = [];
         $request->filled('name') && $where[] = ['project.name', 'like', '%' . $request->name . '%'];
         $request->filled('customer_id') && $where[] = ['project.customer_id', $request->customer_name];

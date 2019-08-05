@@ -30,7 +30,7 @@ class PackageController extends SecondController {
     // 项目包列表
     public function packagelist(Request $request) {
         $page = $request->page <= 1 ? 0 : $request->page - 1;
-        $limit = $request->filled('limit') ? 10 : $request->limit;
+        $limit = $request->filled('limit') ? $request->limit : 10 ;
         $where = [];
         $request->filled('project_id') && $where[] = ['packages.project_id', $request->project_id];
         $request->filled('input_id') && $where[] = ['packages.input_id', $request->input_id];

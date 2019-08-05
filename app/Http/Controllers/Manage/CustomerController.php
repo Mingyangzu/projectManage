@@ -36,10 +36,10 @@
             return view('Manage.customer',['title' => '客户列表', 'data' => json_encode($data)]);
         }
         
-        public function customerlist(Request $request){
+        public function customerlist(Request $request){ 
 //            DB::connection()->enableQueryLog();
             $page = $request->page <= 1 ? 0 : $request->page - 1;
-            $limit = $request->filled('limit') ? 10 : $request->limit;
+            $limit = $request->filled('limit') ? $request->limit : 10;
             $where = [];
             $request->filled('username') && $where[] = ['customer.username', 'like', '%'.$request->username.'%'];
             $request->filled('company') && $where[] = ['customer.company', 'like', '%'. $request->company .'%'];
