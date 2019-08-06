@@ -89,13 +89,13 @@
 
         <div class="layui-form-item"> 
             <div class="">
-                <textarea name="note" placeholder="需求描述" lay-verify="required"  class="layui-textarea"></textarea>
+                <textarea name="note" placeholder="需求描述" class="layui-textarea"></textarea>
             </div>
         </div>  
 
         <div class="layui-form-item"> 
             <div class="">
-                <textarea name="remarks" placeholder="项目说明" class="layui-textarea"></textarea>
+                <textarea name="remarks" placeholder="项目说明 必填项, 也会作为项目第一次沟通的记录" lay-verify="required"  class="layui-textarea"></textarea>
             </div>
         </div> 
 

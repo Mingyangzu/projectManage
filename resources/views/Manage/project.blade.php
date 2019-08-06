@@ -135,7 +135,7 @@
                     , {field: 'develop_date', title: '开发日期', width: 110}
                     , {field: 'deliver_date', title: '交付日期', width: 110}
                     , {field: 'surplus', title: '剩余天数', width: 90}
-                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 230}
+                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 260}
                 ]]
             , response: {
                 statusCode: 200 //规定成功的状态码，默认：0

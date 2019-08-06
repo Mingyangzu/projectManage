@@ -46,9 +46,6 @@ class RecordController extends SecondController {
         $savedata['customer_name'] = CustomerModel::where('id', $request->customer_id)->value('username');
         $savedata['record_at'] = strtotime($request->record_at);
 
-        $request->filled('admin_id') && $savedata['admin_id'] = $request->admin_id;
-        $request->filled('admin_id') && $savedata['admin_name'] = Db::table('admin')->where('id', $request->admin_id)->value('name');
-
         $savedata['result'] = $request->result;
         $request->filled('process') && $savedata['process'] = $request->process;
         $request->filled('question') && $savedata['question'] = $request->question;

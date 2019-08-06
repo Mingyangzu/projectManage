@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Model\Customer as CustomerModel;
 use App\Model\Projects as ProjectsModel;
 use App\Model\Contract as ContractModel;
+use App\Model\Record as RecordModel;
 
 class ProjectController extends SecondController {
 
@@ -93,8 +94,8 @@ class ProjectController extends SecondController {
             $this->returnMsg['msg'] = '项目类型必选项!';
         } else if (!$request->filled('status')) {
             $this->returnMsg['msg'] = '项目状态必选项!';
-        } else if (!$request->filled('note')) {
-            $this->returnMsg['msg'] = '需求说明为必选填项!';
+        } else if (!$request->filled('remarks')) {
+            $this->returnMsg['msg'] = '项目说明为必选填项!';
         }
 
         if ($this->returnMsg['msg'] != '') {
@@ -118,27 +119,58 @@ class ProjectController extends SecondController {
         $request->filled('admin_id') && $savedata['admin_id'] = $request->admin_id;
         $request->filled('admin_id') && $savedata['admin_name'] = Db::table('admin')->where('id', $request->admin_id)->value('name');
 // return json_encode($savedata);       
-        $savedata['note'] = $request->note;
-        $request->filled('remarks') && $savedata['remarks'] = $request->remarks;
+        $request->filled('note') && $savedata['note'] = $request->note;
 
         if ($request->filled('editid')) {
+            $request->filled('remarks') && $savedata['remarks'] = $request->remarks;
             $savedata['last_time'] = time();
             $msg = ProjectsModel::where('id', $request->editid)->update($savedata);
         } else {
+            $savedata['remarks'] = $request->remarks;
             $savedata['input_id'] = $this->arr_login_user['id'];
             $savedata['input_name'] = $this->arr_login_user['name'];
             $savedata['create_time'] = time();
-            $msg = ProjectsModel::insert($savedata);
+            
+            DB::beginTransaction();
+            $msg = ProjectsModel::insertGetId($savedata);
+            $saveArr = $savedata ;
+            $saveArr['project_id'] = $msg;
+            if($msg && $this->addRecord($saveArr)){
+                DB::commit();
+            }else{
+                DB::rollBack();
+            }
+            
         }
 
         if ($msg == true) {
             $this->returnMsg['msg'] = '成功!';
+            $this->returnMsg['data'] = $msg;
         } else {
             $this->returnMsg['code'] = 500;
             $this->returnMsg['msg'] = '失败!';
         }
 
         return json_encode($this->returnMsg);
+    }
+    
+    //添加沟通记录
+    protected function addRecord($saveArr){
+        
+        $savedata = [];
+        $savedata['project_id'] = $saveArr['project_id'];
+        $savedata['project_name'] = $saveArr['name'];
+        $savedata['customer_id'] = $saveArr['customer_id'];
+        $savedata['customer_name'] = $saveArr['customer_name'];
+        $savedata['record_at'] = time();
+        $savedata['result'] = $saveArr['remarks'];
+
+        $savedata['input_id'] = $this->arr_login_user['id'];
+        $savedata['input_name'] = $this->arr_login_user['name'];
+        $savedata['created_at'] = time();
+        $msg = RecordModel::insert($savedata);
+        
+        return $msg;
     }
 
     //获取项目信息
