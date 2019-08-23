@@ -43,6 +43,8 @@ class ProjectController extends SecondController {
         $request->filled('admin_id') && $where[] = ['project.admin_id', $request->admin_id];
         $request->filled('status') && $where[] = ['project.status', $request->status];
         $request->filled('payment_status') && $where[] = ['project.payment_status', $request->payment_status];
+        $request->filled('budget_min') && $where[] = ['project.budget', '>', $request->budget_min];
+        $request->filled('budget_max') && $where[] = ['project.budget', '<', $request->budget_max];
 
         $total = ProjectsModel::where($where);
         $lists = ProjectsModel::selectRaw('project.*, count(records.project_id) total')
@@ -119,7 +121,8 @@ class ProjectController extends SecondController {
         $request->filled('admin_id') && $savedata['admin_id'] = $request->admin_id;
         $request->filled('admin_id') && $savedata['admin_name'] = Db::table('admin')->where('id', $request->admin_id)->value('name');
 // return json_encode($savedata);       
-        $request->filled('note') && $savedata['note'] = $request->note;
+        $savedata['note'] = $request->filled('note') ? $request->note : '';
+        $savedata['budget'] = $request->filled('budget') ? $request->budget : 0;
 
         if ($request->filled('editid')) {
             $request->filled('remarks') && $savedata['remarks'] = $request->remarks;

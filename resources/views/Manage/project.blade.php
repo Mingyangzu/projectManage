@@ -12,6 +12,16 @@
         <div class="layui-inline">
             <input class="layui-input" name="name" id="demoReload" placeholder="项目名" >
         </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">预算范围</label>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="number" min='0' name="budget_min" placeholder="￥" autocomplete="off" class="layui-input numbertext" />
+            </div>
+            <div class="layui-form-mid">-</div>
+            <div class="layui-input-inline" style="width: 100px;">
+                <input type="number" min='0'  name="budget_max" placeholder="￥" autocomplete="off" class="layui-input numbertext" />
+            </div>
+        </div>
         
         <div class="layui-inline">
             <select name="customer_id" class="layui-input" lay-search>
@@ -112,6 +122,7 @@
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
                     , {field: 'name', title: '项目名', width: 180}
+                    , {field: 'budget', title: '项目预算(元)', width: 110}
                     , {field: 'customer_name', title: '客户名', width: 80}
                     , {field: 'create_time', title: '录入日期', width: 110}
                     , {field: 'last_time', title: '更新日期', width: 110}
@@ -289,6 +300,7 @@
             form.val("projectform", {
                 'editid': data.id
                 , "name": data.name
+                , "budget": data.budget
                 , "customer_id": data.customer_id
                 , "admin_id": data.admin_id
                 , "type_id": data.type_id
@@ -421,6 +433,10 @@
                 }
             });
             return false;
+        });
+        
+        $(".numbertext").on('input', function(data){
+            if(this.value.length > 9)  this.value = this.value.slice(0,9);
         });
     });
 

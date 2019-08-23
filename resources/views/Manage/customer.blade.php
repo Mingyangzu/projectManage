@@ -97,7 +97,7 @@
                     , {field: 'create_time', title: '录入日期', width: 110}
                     , {field: 'type', title: '类型', templet: '#types', width: 80}
                     , {field: 'admin_name', title: '归属业务员', width: 100}
-                    , {field: 'total', title: '项目数', width: 80, sort: true, templet: function (d) {
+                    , {field: 'total', title: '项目数', width: 100, sort: true, templet: function (d) {
                             return d.total > 0 ? '<a class="layui-btn layui-btn-xs" lay-event="project"> &nbsp;&nbsp;' + d.total + ' &nbsp;&nbsp;</a>' : 0;
                         }}
                     , {field: 'is_new_customer', title: '老客户', templet: function (d) {

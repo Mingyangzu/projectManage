@@ -54,6 +54,11 @@
                     <?php } ?>
                 </select>
             </div>
+            
+            <label class="layui-form-label" >项目预算(元)</label>
+            <div class="layui-input-inline">
+                <input class="layui-input" name="budget" placeholder="0">
+            </div>
         </div>
 
         <div class="layui-form-item" >
