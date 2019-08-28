@@ -15,7 +15,7 @@
                     @foreach($menu_list as $vv)
                     @if($arr_login_admin['is_super']==1 || in_array($vv->link,$arr_have_power))
                     @if($vv->pid==$v->id)
-                    <dd class="" id="{{$vv->link}}"><a href="/{{$vv->link}}"> {{$vv->name}} </a></dd>
+                    <dd class="" id="{{str_replace('/', '', $vv->link)}}"><a href="/{{$vv->link}}"> {{$vv->name}} </a></dd>
                     @endif
                     @endif
                     @endforeach

@@ -129,5 +129,8 @@ Route::group(['namespace' => 'Manage'], function(){
    Route::delete('delpackage', 'PackageController@delpackage')->name('delpackage');
    Route::post('uppackagefiles', 'PackageController@uppackagefiles')->name('uppackagefiles');
    
+   Route::get('process/todolist', 'ProcessController@todolist')->name('todolist');
+   Route::get('process/handled', 'ProcessController@handled')->name('handled');
+   
 });
 

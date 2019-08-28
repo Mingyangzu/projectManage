@@ -31,15 +31,17 @@
         <script>
         //JavaScript代码区域
             layui.use(['element', 'jquery'], function () {
-                var element = layui.element, $ = layui.jquery;
+                var element = layui.element, $ = layui.jquery, nowpagename = '';
 
-                var pathnameonelen = location.pathname.indexOf('/', 1);
-                var nowpagename = pathnameonelen > 1 ? location.pathname.substring(1, pathnameonelen) : location.pathname.substring(1);
+//                var pathnameonelen = location.pathname.indexOf('/');
+//                nowpagename = pathnameonelen > 1 ? location.pathname.substring(1, pathnameonelen) : location.pathname.substring(1);
+                
+                nowpagename = location.pathname.replace(/\//g, '');
                 $('#' + nowpagename).addClass('layui-this');
                 $('#' + nowpagename).parent().parent('li').addClass('layui-nav-itemed');
 
                 element.on('nav(leftmenu)', function (elem) {
-        //      debugger;
+//              debugger;
                     elem.parent().siblings().removeClass('layui-nav-itemed');
 
                 });
