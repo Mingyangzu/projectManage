@@ -129,8 +129,13 @@ Route::group(['namespace' => 'Manage'], function(){
    Route::delete('delpackage', 'PackageController@delpackage')->name('delpackage');
    Route::post('uppackagefiles', 'PackageController@uppackagefiles')->name('uppackagefiles');
    
-   Route::get('process/todolist', 'ProcessController@todolist')->name('todolist');
-   Route::get('process/handled', 'ProcessController@handled')->name('handled');
+   Route::group(['prefix'=>'process'], function(){
+        Route::get('lists', 'ProcessController@lists')->name('process.lists');
+        Route::get('todolist', 'ProcessController@todolist')->name('process.todolist');
+        Route::get('handled', 'ProcessController@handled')->name('process.handled');
+        Route::get('getproject', 'ProcessController@getproject')->name('process.getproject');
+        Route::post('addprocess', 'ProcessController@addprocess')->name('process.addprocess');
+   });
    
 });
 

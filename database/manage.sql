@@ -40,7 +40,7 @@ alter table tuomei.project change payment_status payment_status tinyint default 
 alter table tuomei.project change type_id type_id set('App', 'Web', '小程序', '公众号', '网站', '商城') comment'项目类型：App,Web,小程序,公众号,网站,商城' ;
 
 
-/* records  */
+--  项目沟通记录  
 CREATE TABLE IF NOT EXISTS `records` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `project_id` int unsigned NOT NULL comment '项目id',
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `records` (
 ) ENGINE=innodb  DEFAULT CHARSET=utf8 comment'项目沟通记录表';
 
 
-/* packages  */
+--  程序包 
 CREATE TABLE IF NOT EXISTS `packages` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `project_id` int unsigned NOT NULL comment '项目id',
@@ -81,6 +81,69 @@ CREATE TABLE IF NOT EXISTS `packages` (
   PRIMARY KEY (`id`),
   key `projectid` (`project_id`)
 ) ENGINE=innodb  DEFAULT CHARSET=utf8 comment'项目程序包表';
+
+
+-- 项目下单表
+CREATE TABLE `tuomei`.`process` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` int(11)  NOT NULL  comment'项目id',
+  `project_name` varchar(300) NOT NULL DEFAULT '' COMMENT '项目名称',
+  `salesman_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '签单人id',
+  `admin_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '项目监督负责人id',
+  `technical_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '技术负责人id',
+  `customer_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '客户id',
+  `customer_str` varchar(255) not null comment'客户姓名及电话',
+  `company_str` varchar(255) comment'公司名及电话',
+  `note` text comment'项目开发内容及需求',
+  `status` tinyint(3) DEFAULT '1' COMMENT '项目进度',
+  `develop_id` int(11) DEFAULT '1' COMMENT '当前执行人',
+  `develop_date` date DEFAULT NULL COMMENT '下单时间',
+  `deliver_date` date DEFAULT NULL COMMENT '合同签订完结时间',
+  `admin_note` varchar(510) COMMENT '项目监督负责人总结',
+  `customer_note` varchar(510) COMMENT '技术负责人总结',
+  `create_time` date DEFAULT NULL COMMENT '创建时间',
+  `last_time` date DEFAULT NULL COMMENT '最后修改时间',
+  `deleted_at` date DEFAULT NULL COMMENT '软删除',
+  PRIMARY KEY (`id`),
+  key `process_project_id`(`project_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目下单表';
+
+-- 项目下单表  项目进度
+CREATE TABLE `tuomei`.`process_note` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `process_id` int(11)  NOT NULL  comment'项目下单表id',
+  `admin_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '开发人id',
+  `admin_name` varchar(125) NOT NULL DEFAULT '' COMMENT '开发人',
+  `over_date` date DEFAULT NULL COMMENT '指定完结时间',
+  `end_date` date DEFAULT NULL COMMENT '实际完结时间',
+  `remarks` varchar(510) COMMENT '开发内容',
+  `note` varchar(510) COMMENT '总结',
+  `step` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '阶段',
+  `type` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1：开发，2：财务',
+  `create_time` date DEFAULT NULL COMMENT '创建时间',
+  `last_time` date DEFAULT NULL COMMENT '最后修改时间',
+  `deleted_at` date DEFAULT NULL COMMENT '软删除',
+  PRIMARY KEY (`id`),
+  key `note_process_id`(`process_id`, `type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目下单表-进度记录';
+
+-- 项目下单表 绩效考核总结
+CREATE TABLE `tuomei`.`process_assess` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `process_id` int(11)  NOT NULL  comment'项目下单表id',
+  `customer_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '技术负责人id',
+  `customer_name` varchar(125) NOT NULL DEFAULT '' COMMENT '技术负责人',
+  `admin_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '项目监督负责人id',
+  `admin_name` varchar(125) NOT NULL DEFAULT '' COMMENT '项目监督负责人',
+  `president_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '总经理id',
+  `president_name` varchar(125) NOT NULL DEFAULT '' COMMENT '总经理',
+  `note` varchar(1020) COMMENT '考核内容',
+  `create_time` date DEFAULT NULL COMMENT '创建时间',
+  `last_time` date DEFAULT NULL COMMENT '最后修改时间',
+  `deleted_at` date DEFAULT NULL COMMENT '软删除',
+  PRIMARY KEY (`id`),
+  key `note_process_id`(`process_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目下单表-绩效考核结果';
 
 
 

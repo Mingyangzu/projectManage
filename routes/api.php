@@ -16,3 +16,9 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+Route::group(['prefix'=>'icbc', 'namespace' => 'Api'], function(){
+    Route::get('notify', 'IcbcPayController@notify')->name('icbc.notify');
+    Route::get('payshow', 'IcbcPayController@payshow')->name('icbc.payshow');   
+});

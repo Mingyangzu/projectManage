@@ -10,6 +10,9 @@ use App\Http\Controllers\SecondController;
 use App\Model\Projects as ProjectsModel;
 use App\Model\Customer as CustomerModel;
 use App\Model\Record as RecordModel;
+use App\Model\Contract as ContractModel;
+use App\Model\Process as ProcessModel;
+
 
 class ProcessController extends SecondController {
 
@@ -17,6 +20,18 @@ class ProcessController extends SecondController {
 
     public function __construct() {
         parent::__construct();
+    }
+
+    //项目下单表列表
+    public function lists(Request $request){
+        
+        $data['customer'] = Db::table('customer')->whereNull('deleted_at')->orderBy('id', 'desc')->pluck('username', 'id')->toArray();
+        $data['adminer'] = Db::table('admin_role')->leftJoin('admin', 'admin_role.admin_id', '=', 'admin.id')
+                        ->where([['admin.status', 1]])->pluck('admin.name', 'admin.id')->toArray();
+        $data['project'] = Db::table('project')->whereBetween('status', [1, 10])->whereNull('deleted_at')->orderBy('id', 'desc')->pluck('name', 'id')->toArray();
+        //已签合同的项目
+        $data['contract_project'] = Db::table('contract')->leftjoin('project', 'project.id', '=', 'contract.project_id')->whereNull('contract.deleted_at')->orderBy('contract.id', 'desc')->pluck('project.name', 'project.id')->toArray();
+        return view('manage.lists',['title' => '项目下单表', 'data' => json_encode($data) ]);
     }
     
     //待处理列表
@@ -39,13 +54,14 @@ class ProcessController extends SecondController {
     }
 
 
-    public function addrecord(Request $request) {
+    
+    public function addprocess(Request $request) {
         if (!$request->isMethod('post')) {
             $this->returnMsg['msg'] = '请求方式有误!';
-        } else if (!$request->filled('project_id') || !$request->filled('customer_id')) {
+        }
+        
+        if (!$request->filled('project_id') || !$request->filled('salesman_id') || !$request->filled('admin_id') || !$request->filled('technical_id') || !$request->filled('customer_id') || !$request->filled('develop_id') || !$request->filled('deliver_date')) {
             $this->returnMsg['msg'] = '提交数据有误!';
-        } else if (!$request->filled('result')) {
-            $this->returnMsg['msg'] = '沟通结果必选填项!';
         }
 
         if ($this->returnMsg['msg'] != '') {
@@ -56,22 +72,26 @@ class ProcessController extends SecondController {
         $savedata = [];
         $savedata['project_id'] = $request->project_id;
         $savedata['project_name'] = ProjectsModel::where('id', $request->project_id)->value('name');
+        $savedata['salesman_id'] = $request->salesman_id;
+        $savedata['admin_id'] = $request->admin_id;
+        $savedata['technical_id'] = $request->technical_id;
         $savedata['customer_id'] = $request->customer_id;
-        $savedata['customer_name'] = CustomerModel::where('id', $request->customer_id)->value('username');
-        $savedata['record_at'] = strtotime($request->record_at);
-
-        $savedata['result'] = $request->result;
-        $request->filled('process') && $savedata['process'] = $request->process;
-        $request->filled('question') && $savedata['question'] = $request->question;
-
+        $savedata['customer_str'] = $request->customer_str;
+        $savedata['company_str'] = $request->company_str;
+        $savedata['note'] = $request->note;
+        $savedata['status'] = 0;
+        $savedata['develop_id'] = $request->develop_id;
+        $savedata['develop_date'] = $request->develop_date;
+        $savedata['deliver_date'] = $request->deliver_date;
+       
+        $this->returnMsg['data'] = $savedata;
+        
         if ($request->filled('editid')) {
-            $savedata['updated_at'] = time();
-            $msg = RecordModel::where('id', $request->editid)->update($savedata);
+            $savedata['updated_at'] = date('Y-m-d H:i:s');
+            $msg = ProcessModel::where('id', $request->editid)->update($savedata);
         } else {
-            $savedata['input_id'] = $this->arr_login_user['id'];
-            $savedata['input_name'] = $this->arr_login_user['name'];
-            $savedata['created_at'] = time();
-            $msg = RecordModel::insert($savedata);
+            $savedata['created_at'] = date('Y-m-d H:i:s');
+            $msg = ProcessModel::insert($savedata);
         }
 
         if ($msg == true) {
@@ -155,5 +175,31 @@ class ProcessController extends SecondController {
 
         return $this->returnMsg;
     }
+    
+    
+    //添加项目下单表,获取项目部分信息
+    public function getproject(Request $request){
+        if (!$request->filled('project_id')) {
+            $this->returnMsg['code'] = 304;
+            $this->returnMsg['msg'] = '提交参数有误!';
+            return $this->returnMsg;
+        }
+        
+        $infos = ContractModel::where('contract.project_id', $request->project_id)
+                ->leftjoin('project', 'project.id', '=', 'contract.project_id')
+                ->leftjoin('customer', 'customer.id', '=', 'project.customer_id')
+                ->select('project.id', 'project.name', 'project.admin_id', 'project.customer_id', 'project.customer_name', 'project.note', 'customer.company', 'customer.phone', 'customer.landline', 'contract.contract_time', 'contract.end_time')->first();
+
+        if($infos){
+           $this->returnMsg['data'] = $infos; 
+           $this->returnMsg['msg'] = 'success';
+        }else{
+            $this->returnMsg['code'] = 404;
+            $this->returnMsg['data'] = '';
+            $this->returnMsg['msg'] = '未找到相应数据';
+        }
+        return json_encode($this->returnMsg);
+    }
+    
 
 }
