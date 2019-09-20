@@ -118,13 +118,14 @@ CREATE TABLE `tuomei`.`process_note` (
   `admin_name` varchar(125) NOT NULL DEFAULT '' COMMENT '开发人',
   `over_date` date DEFAULT NULL COMMENT '指定完结时间',
   `end_date` date DEFAULT NULL COMMENT '实际完结时间',
+  `develop_id` int default 0 comment'下一执行人',
   `remarks` varchar(510) COMMENT '开发内容',
   `note` varchar(510) COMMENT '总结',
   `step` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '阶段',
   `type` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1：开发，2：财务',
-  `create_time` date DEFAULT NULL COMMENT '创建时间',
-  `last_time` date DEFAULT NULL COMMENT '最后修改时间',
-  `deleted_at` date DEFAULT NULL COMMENT '软删除',
+  `created_at` DATETIME NULL DEFAULT NULL COMMENT '创建时间' ,
+  `updated_at` DATETIME NULL DEFAULT NULL COMMENT '最后修改时间' ,
+  `deleted_at` DATETIME DEFAULT NULL COMMENT '软删除',
   PRIMARY KEY (`id`),
   key `note_process_id`(`process_id`, `type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目下单表-进度记录';
@@ -140,13 +141,10 @@ CREATE TABLE `tuomei`.`process_assess` (
   `president_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '总经理id',
   `president_name` varchar(125) NOT NULL DEFAULT '' COMMENT '总经理',
   `note` varchar(1020) COMMENT '考核内容',
-  `create_time` date DEFAULT NULL COMMENT '创建时间',
-  `last_time` date DEFAULT NULL COMMENT '最后修改时间',
-  `deleted_at` date DEFAULT NULL COMMENT '软删除',
+  `created_at` DATETIME NULL DEFAULT NULL COMMENT '创建时间' ,
+  `updated_at` DATETIME NULL DEFAULT NULL COMMENT '最后修改时间' ,
+  `deleted_at` DATETIME NULL DEFAULT NULL COMMENT '软删除' ,
   PRIMARY KEY (`id`),
   key `note_process_id`(`process_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='项目下单表-绩效考核结果';
-
-
-
 

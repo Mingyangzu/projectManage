@@ -133,12 +133,16 @@ Route::group(['namespace' => 'Manage'], function(){
         Route::get('lists', 'ProcessController@lists')->name('process.lists');
         Route::get('getlists', 'ProcessController@getlists')->name('process.getlists');
         Route::get('todolist', 'ProcessController@todolist')->name('process.todolist');
+        Route::get('gettodolist', 'ProcessController@gettodolist')->name('process.gettodolist');
         Route::get('handled', 'ProcessController@handled')->name('process.handled');
+        Route::get('handledlist', 'ProcessController@handledlist')->name('process.handledlist');
         Route::get('getproject', 'ProcessController@getproject')->name('process.getproject');
         Route::post('addprocess', 'ProcessController@addprocess')->name('process.addprocess');
         Route::delete('del', 'ProcessController@del')->name('del');
         Route::get('detail', 'ProcessController@detail')->name('process.detail');
         Route::get('edit', 'ProcessController@edit')->name('process.edit');
+        Route::post('addnote', 'ProcessController@addnote')->name('process.addnote');
+        
    });
    
 });

@@ -10,9 +10,9 @@
 <div class="demoTable">
     <form class="layui-form layui-form-item" action="" onsubmit="return false;">
         <div class="layui-inline">
-            <select name="salesman_id" class="layui-input"  lay-search>
-                <option value="">签单人</option>
-                <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
+            <select name="process_id" class="layui-input"  lay-search>
+                <option value="">已下单项目</option>
+                <?php foreach (json_decode($data)->process as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
                 <?php } ?>
             </select>
@@ -36,12 +36,6 @@
 
 <table id="demo" lay-filter="test"></table>
 
-<script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="addnote">开发记录</a>
-    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
-</script>
-
-
 <ul class="layui-timeline" id='timelinebox' style='display: none; margin: 10px 20px;'></ul>
 
 @include('Manage.layouts.process_addnote')
@@ -57,36 +51,25 @@
         table.render({
             elem: '#demo'
             , id: 'tablelist'
-            , url: '/process/gettodolist' //数据接口
+            , url: '/process/handledlist' //数据接口
             , page: true //开启分页
             , cellMinWidth: 60
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
                     , {field: 'project_name', title: '签约项目', width: 200}
-                    , {field: 'customer_str', title: '客户信息', width: 200}
-                    , {field: 'company_str', title: '公司信息', width: 300}
-                    , {field: 'salesman_str', title: '签单人', width: 120}
                     , {title: '开发进度', width: 160, templet: function(d){
                             return sysdata.status[d.status] ;
                     }}
-                    , {field: 'name', title: '当前执行人', width: 120}
+                    , {field: 'over_date', title: '指定完成日期', width: 200}
+                    , {field: 'end_date', title: '实际完成日期', width: 300}
                     , {field: 'technical_str', title: '技术负责人', width: 120}
                     , {field: 'admin_str', title: '监督负责人', width: 120}
-                    , {field: 'develop_date', title: '下单日期', width: 120}
-                    , {field: 'deliver_date', title: '完结日期', width: 120}
-                    , {fixed: 'right', title: '操作', width: 180, templet: function(d){
-                            var toolstr = '';
-                            if(d.status < 10){
-                                toolstr = '<a class="layui-btn layui-btn-xs" lay-event="addnote">开发记录</a>';
-                            }else if(d.status >= 10 && d.status < 100){
-                                toolstr = '<a class="layui-btn layui-btn-xs" lay-event="addtext">' + sysdata.status[d.status] + '</a>';
-                            }else{
-                                toolstr = '<a class="layui-btn layui-btn-xs" lay-event="overpro">完结</a>';
-                            }
-                    
-                            toolstr += '<a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>';
+                    , {field: 'created_at', title: '记录日期', width: 300}
+                    , {fixed: 'right', title: '操作', width: 160, templet: function(d){
+                            var toolstr = (d.status == d.step) ? '<a class="layui-btn layui-btn-xs" lay-event="edit">修改记录</a>' : '';
+                            toolstr += '<a class="layui-btn layui-btn-xs" lay-event="detail">记录详情</a>';
                             return toolstr;
-                    } }
+                    } } 
                 ]]
             , response: {
                 statusCode: 200 //规定成功的状态码，默认：0
@@ -116,16 +99,23 @@
             });
         });
 
-        table.on('tool(test)', function (obj) {
-            var data = obj.data;
+        table.on('tool(test)', function (obj) { console.log(obj.data);
+            var data = obj.data;  
             switch (obj.event) {
-                case 'addnote':
+                case 'edit':
                     noteval({
-                         process_id: data.id
+                        editid: data.id
+                        , process_id: data.process_id
                         , process_name: data.project_name
-                        , over_date: data.deliver_date
+                        , over_date: data.over_date
+                        , end_date: data.end_date
                         , status: data.status
-                    });
+                        , develop_id: data.develop_id
+                        , note: data.note
+                        , remarks: data.remarks
+                    });console.log(data.id);
+                    $('.detailevent').css({display: 'none'});
+                    $('.editevent').css({display: 'block'});
                     var index = layer.open({
                         type: 1,
                         title: "提交开发记录",
@@ -141,7 +131,16 @@
                     });
                     break;
                 case 'detail':
-                    getInfomsg(obj.data.id, '/process/detail');
+                    noteval({
+                         process_id: data.id
+                        , process_name: data.project_name
+                        , over_date: data.over_date
+                        , end_date: data.end_date
+                        , status: data.status
+                        , develop_id: data.develop_id
+                        , note: data.note
+                        , remarks: data.remarks
+                    });
                     $('.detailevent').css({display: 'block'});
                     $('.editevent').css({display: 'none'});
                     var index = layer.open({
@@ -151,7 +150,7 @@
                         shadeClose: true,
                         shade: 0,
                         skin: 'layui-layer-rim',
-                        content: $('#editbox'),
+                        content: $('#addnote'),
                         cancel: function (index, res) {
                         }
                     });
@@ -159,31 +158,7 @@
             }
         });
 
-        var getInfomsg = function (cuid, url) {
-            if (!cuid || !url) {
-                layer.msg('提交有误!', {
-                    icon: 5
-                });
-                return false;
-            }
-            $.ajax({
-                url: url,
-                data: {eid: cuid},
-                type: "get",
-                dataType: 'json',
-                success: function (res) {
-                    if (res.code == 200) {
-                        formval(res.data);
-                    } else {
-                        layer.msg(res.msg, {
-                            icon: 5
-                        });
-                        return false;
-                    }
-                }
-            });
-        }
-        
+
         var noteval = function (data) {
             form.val("addnoteform", {
                  process_id: data.process_id

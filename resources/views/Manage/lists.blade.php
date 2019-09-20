@@ -77,7 +77,7 @@
                     , {field: 'customer_str', title: '客户信息', width: 200}
                     , {field: 'company_str', title: '公司信息', width: 300}
                     , {field: 'salesman_str', title: '签单人', width: 120}
-                    , {title: '开发进度', width: 120, templet: function(d){
+                    , {title: '开发进度', width: 160, templet: function(d){
                             return sysdata.status[d.status] ;
                     }}
                     , {field: 'name', title: '当前执行人', width: 120}
@@ -120,6 +120,7 @@
             switch (obj.event) {
                 case 'edit':
                     getInfomsg(obj.data.id, '/process/edit');
+                    $('#subform').text('编辑');
                     $('.detailevent').css({display: 'none'});
                     $('.editevent').css({display: 'block'});
                     var index = layer.open({
@@ -207,6 +208,7 @@
                 , deliver_date: data.deliver_date
                 , technical_id: data.technical_id
                 , admin_id: data.admin_id
+                , status: data.status
                 , develop_id: data.develop_id
                 , customer_str: data.customer_str
                 , company_str: data.company_str
@@ -217,6 +219,7 @@
 
         $('#addProcess').click(function () {
             formval({});
+            $('#subform').text('添加');
             $('.detailevent').css({display: 'none'});
             $('.editevent').css({display: 'block'});
             var index = layer.open({
