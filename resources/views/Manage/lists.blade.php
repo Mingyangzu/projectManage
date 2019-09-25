@@ -17,7 +17,7 @@
                 <?php } ?>
             </select>
         </div>
-        
+
         <div class="layui-inline">
             <select name="salesman_id" class="layui-input"  lay-search>
                 <option value="">签单人</option>
@@ -51,19 +51,20 @@
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-xs" lay-event="finance">财务确认</a>
 </script>
 
 
 <ul class="layui-timeline" id='timelinebox' style='display: none; margin: 10px 20px;'></ul>
 
 @include('Manage.layouts.process_add')
-
+@include('Manage.layouts.process_finance')
 
 <script>
     layui.use(['table', 'form', 'laydate', 'jquery', 'upload'], function () {
         var table = layui.table, $ = layui.jquery, form = layui.form, laydate = layui.laydate, upload = layui.upload;
         var sysdata = <?php echo $data ?>;
-        
+
         //第一个实例
         table.render({
             elem: '#demo'
@@ -77,15 +78,15 @@
                     , {field: 'customer_str', title: '客户信息', width: 200}
                     , {field: 'company_str', title: '公司信息', width: 300}
                     , {field: 'salesman_str', title: '签单人', width: 120}
-                    , {title: '开发进度', width: 160, templet: function(d){
-                            return sysdata.status[d.status] ;
-                    }}
+                    , {title: '开发进度', width: 160, templet: function (d) {
+                            return sysdata.status[d.status];
+                        }}
                     , {field: 'name', title: '当前执行人', width: 120}
                     , {field: 'technical_str', title: '技术负责人', width: 120}
                     , {field: 'admin_str', title: '监督负责人', width: 120}
                     , {field: 'develop_date', title: '下单日期', width: 120}
                     , {field: 'deliver_date', title: '完结日期', width: 120}
-                    , {fixed: 'right', title: '操作', toolbar: '#barDemo', width: 160}
+                    , {title: '操作', toolbar: '#barDemo', width: 220}
                 ]]
             , response: {
                 statusCode: 200 //规定成功的状态码，默认：0
@@ -131,33 +132,38 @@
                         shade: 0,
                         skin: 'layui-layer-rim',
                         content: $('#editbox'),
-                        cancel: function (index, res) {
-//                            $('#subform').removeClass('layui-btn-disabled');
-//                            $('#subform').removeAttr('disabled'); 
-                        }
+                        cancel: function (index, res) { }
                     });
                     break;
                 case 'detail':
-                    getInfomsg(obj.data.id, '/process/detail');
                     $('.detailevent').css({display: 'block'});
                     $('.editevent').css({display: 'none'});
                     var index = layer.open({
-                        type: 1,
-                        title: "项目下单表详情",
-                        area: ['60%', '80%'],
+                        type: 2,
+                        title: false,
+                        area: ['1000px', '90%'],
                         shadeClose: true,
                         shade: 0,
                         skin: 'layui-layer-rim',
-                        content: $('#editbox'),
-                        cancel: function (index, res) {
+                        btn: ['打印', '关闭'],
+                        content: "/process/detail?did=" + data.id,
+                        yes: function (index, layero) {
+                            var iframebody = layer.getChildFrame('body', index);
+                            var iframeWin = window[layero.find('iframe')[0]['name']];
+                            iframeWin.process_print(1);
+                        }
+                        , btn2: function (index, layero) {
+                            layer.closeAll();
+                        }
+                        , cancel: function (index, res) {
                         }
                     });
                     break;
                 case 'del':
-                    layer.confirm('确定要删除该项目下单表?', {icon: 3, title: '删除项目下单表'}, function (index) {
+                    layer.confirm("确定要删除该项目下单表? <br /> 下单表记录会同时删除 !", {icon: 3, title: '删除项目下单表'}, function (index) {
                         $.ajax({
                             url: '/process/del',
-                            data: {_token: "{{ csrf_token() }}", _method: 'DELETE',del_id: obj.data.id},
+                            data: {_token: "{{ csrf_token() }}", _method: 'DELETE', del_id: obj.data.id},
                             type: 'post',
                             dataType: 'json',
                             success: function (res) {
@@ -171,6 +177,21 @@
                         layer.close(index);
                     });
                     break;
+                case 'finance': 
+                    form.val('financeform', {
+                        process_id: data.id
+                        , process_name: data.project_name
+                    });
+                    var index = layer.open({
+                        type: 1,
+                        title: "财务收款确认",
+                        area: ['60%', '60%'],
+                        shadeClose: true,
+                        shade: 0,
+                        skin: 'layui-layer-rim',
+                        content: $('#financebox'),
+                        cancel: function (index, res) { }
+                    });
             }
         });
 
@@ -201,7 +222,7 @@
 
         var formval = function (data) {
             form.val("processform", {
-                 editid: data.id
+                editid: data.id
                 , project_id: data.project_id
                 , salesman_id: data.admin_id
                 , develop_date: data.develop_date
@@ -237,39 +258,39 @@
         });
 
 
-            form.on('submit(subform)', function (data) {  
-                $('#subform').addClass('layui-btn-disabled');
-                $('#subform').attr('disabled', 'disabled');
-                data.field.admin_str = sysdata.adminer[data.field.admin_id];
-                data.field.salesman_str = sysdata.adminer[data.field.salesman_id];
-                data.field.technical_str = sysdata.adminer[data.field.technical_id];
-                $.ajax({
-                    url: '/process/addprocess',
-                    data: data.field,
-                    type: "post",
-                    dataType: 'json',
-                    success: function (res) {
-                        if (res.code == 200) {
-                            layer.closeAll();
-                            layer.msg("成功", {
-                                icon: 1
-                            });
-                            layer.closeAll();
-                            formval({});
-                            table.reload('tablelist', {});
-                        } else {
-                            layer.msg(res.msg, {
-                                icon: 5
-                            });
-                        } 
-                    },
-                    complete: function(res){ 
-                        $('#subform').removeClass('layui-btn-disabled');
-                        $('#subform').removeAttr('disabled'); 
+        form.on('submit(subform)', function (data) {
+            $('#subform').addClass('layui-btn-disabled');
+            $('#subform').attr('disabled', 'disabled');
+            data.field.admin_str = sysdata.adminer[data.field.admin_id];
+            data.field.salesman_str = sysdata.adminer[data.field.salesman_id];
+            data.field.technical_str = sysdata.adminer[data.field.technical_id];
+            $.ajax({
+                url: '/process/addprocess',
+                data: data.field,
+                type: "post",
+                dataType: 'json',
+                success: function (res) {
+                    if (res.code == 200) {
+                        layer.msg("成功", {
+                            icon: 1
+                        });
+                        layer.closeAll();
+                        formval({});
+                        table.reload('tablelist', {});
+                    } else {
+                        layer.msg(res.msg, {
+                            icon: 5
+                        });
                     }
-                });
-                return false;
+                },
+                complete: function (res) {
+                    $('#subform').removeClass('layui-btn-disabled');
+                    $('#subform').removeAttr('disabled');
+                }
             });
+            return false;
+        });
+
     });
 
 </script>

@@ -37,8 +37,8 @@
 <table id="demo" lay-filter="test"></table>
 
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="addnote">开发记录</a>
-    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
+<!--    <a class="layui-btn layui-btn-xs" lay-event="addnote">开发记录</a>
+    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>-->
 </script>
 
 
@@ -74,11 +74,11 @@
                     , {field: 'admin_str', title: '监督负责人', width: 120}
                     , {field: 'develop_date', title: '下单日期', width: 120}
                     , {field: 'deliver_date', title: '完结日期', width: 120}
-                    , {fixed: 'right', title: '操作', width: 180, templet: function(d){
+                    , {title: '操作', width: 180, templet: function(d){
                             var toolstr = '';
                             if(d.status < 10){
                                 toolstr = '<a class="layui-btn layui-btn-xs" lay-event="addnote">开发记录</a>';
-                            }else if(d.status >= 10 && d.status < 100){
+                            }else if(d.status >= 10 && d.status < 99){
                                 toolstr = '<a class="layui-btn layui-btn-xs" lay-event="addtext">' + sysdata.status[d.status] + '</a>';
                             }else{
                                 toolstr = '<a class="layui-btn layui-btn-xs" lay-event="overpro">完结</a>';
@@ -115,9 +115,11 @@
                 }
             });
         });
-
+        
+        var tooldata = {};
         table.on('tool(test)', function (obj) {
             var data = obj.data;
+            tooldata = data;
             switch (obj.event) {
                 case 'addnote':
                     noteval({
@@ -126,6 +128,11 @@
                         , over_date: data.deliver_date
                         , status: data.status
                     });
+                    checkstatus(data.status);
+                    $('.addnote').css('display', 'block');
+                    $('.editevent').css({display: 'block'});
+                    $('.noteitem').attr('lay-verify', 'required');
+                    $('.notetitle').text('开发人员总结');
                     var index = layer.open({
                         type: 1,
                         title: "提交开发记录",
@@ -135,9 +142,58 @@
                         skin: 'layui-layer-rim',
                         content: $('#addnote'),
                         cancel: function (index, res) {
-//                            $('#subform').removeClass('layui-btn-disabled');
-//                            $('#subform').removeAttr('disabled'); 
                         }
+                    });
+                    break;
+                case 'addtext':
+                    noteval({
+                         process_id: data.id
+                        , process_name: data.project_name
+                        , status: data.status
+                    });
+                    checkstatus(data.status);
+                    $('.addnote').css('display', 'none');
+                    $('.editevent').css({display: 'block'});
+                    $('.notetitle').text('总结内容');
+                    $('.noteitem').attr('lay-verify', '');
+                    var index = layer.open({
+                        type: 1,
+                        title: sysdata.status[data.status],
+                        area: ['60%', '80%'],
+                        shadeClose: true,
+                        shade: 0,
+                        skin: 'layui-layer-rim',
+                        content: $('#addnote'),
+                        cancel: function (index, res) {
+                        }
+                    });
+                    break;
+                case 'overpro':
+                    layer.confirm('确定完结该下单表?', {icon: 3, title:'提示'}, function(index){
+                        console.log(index, data);
+                        $.ajax({
+                            url: '/process/overnote',
+                            data: {_token: "{{ csrf_token() }}", id: data.id},
+                            type: "post",
+                            dataType: 'json',
+                            success: function (res) {
+                                if (res.code == 200) {
+                                    layer.msg("成功", {
+                                        icon: 1
+                                    });
+                                    layer.closeAll();
+                                    table.reload('tablelist', {});
+                                } else {
+                                    layer.msg(res.msg, {
+                                        icon: 5
+                                    });
+                                } 
+                            },
+                            complete: function(res){ 
+                                $('#subform').removeClass('layui-btn-disabled');
+                                $('#subform').removeAttr('disabled'); 
+                            }
+                        });
                     });
                     break;
                 case 'detail':
@@ -213,6 +269,30 @@
                 , note: data.note
             });
         }
+        
+        form.on('select(status)', function(data){ 
+            checkstatus(data.value);
+        });
+        
+        var checkstatus = function(itemid){
+            var develop_id = 0;
+            switch(itemid + ''){
+                case '10': 
+                    develop_id = tooldata.technical_id; 
+                    $('#develop_id').attr('disabled', 'disabled'); 
+                break;
+                case '11':
+                    develop_id = tooldata.admin_id; 
+                    $('#develop_id').attr('disabled', 'disabled'); 
+                break;
+                case '100':
+                   $('#develop_id').attr('disabled', 'disabled'); 
+                break;
+                default:
+                    $('#develop_id').removeAttr('disabled'); 
+            }
+            form.val('addnoteform', {develop_id: develop_id});
+        }
 
 
             form.on('submit(subform)', function (data) {  
@@ -225,7 +305,6 @@
                     dataType: 'json',
                     success: function (res) {
                         if (res.code == 200) {
-                            layer.closeAll();
                             layer.msg("成功", {
                                 icon: 1
                             });

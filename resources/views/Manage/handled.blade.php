@@ -57,17 +57,28 @@
             , cols: [[//表头
                     {field: 'id', title: 'ID', width: 60, sort: true, fixed: 'left'}
                     , {field: 'project_name', title: '签约项目', width: 200}
-                    , {title: '开发进度', width: 160, templet: function(d){
-                            return sysdata.status[d.status] ;
+                    , {title: '进度', width: 160, templet: function(d){
+                            return sysdata.status[d.step] ;
+                    }}
+                    , {title: '下一阶段进度', width: 160, templet: function(d){
+                            return sysdata.status[d.next_step] ;
                     }}
                     , {field: 'over_date', title: '指定完成日期', width: 200}
                     , {field: 'end_date', title: '实际完成日期', width: 300}
                     , {field: 'technical_str', title: '技术负责人', width: 120}
                     , {field: 'admin_str', title: '监督负责人', width: 120}
                     , {field: 'created_at', title: '记录日期', width: 300}
-                    , {fixed: 'right', title: '操作', width: 160, templet: function(d){
-                            var toolstr = (d.status == d.step) ? '<a class="layui-btn layui-btn-xs" lay-event="edit">修改记录</a>' : '';
-                            toolstr += '<a class="layui-btn layui-btn-xs" lay-event="detail">记录详情</a>';
+                    , {title: '操作', width: 180, templet: function(d){
+                            var toolstr = '';
+                            if(d.status < 10 && d.status == d.next_step){
+                                toolstr = '<a class="layui-btn layui-btn-xs" lay-event="edit">修改记录</a>';
+                                toolstr += '<a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>';
+                            }else if(d.status >= 10 && d.status < 100 && d.status == d.next_step){
+                                toolstr = '<a class="layui-btn layui-btn-xs" lay-event="edittext">' + sysdata.status[d.step] + '</a>';
+                                toolstr += '<a class="layui-btn layui-btn-xs" lay-event="detailtext">详情</a>';
+                            }else{
+                                toolstr += '<a class="layui-btn layui-btn-xs" lay-event="detailtext">详情</a>';
+                            }
                             return toolstr;
                     } } 
                 ]]
@@ -99,7 +110,7 @@
             });
         });
 
-        table.on('tool(test)', function (obj) { console.log(obj.data);
+        table.on('tool(test)', function (obj) {
             var data = obj.data;  
             switch (obj.event) {
                 case 'edit':
@@ -109,25 +120,50 @@
                         , process_name: data.project_name
                         , over_date: data.over_date
                         , end_date: data.end_date
-                        , status: data.status
+                        , status: data.next_step
                         , develop_id: data.develop_id
                         , note: data.note
                         , remarks: data.remarks
-                    });console.log(data.id);
+                    });
                     $('.detailevent').css({display: 'none'});
                     $('.editevent').css({display: 'block'});
+                    $('.addnote').css('display', 'block');
+                    $('.noteitem').attr('lay-verify', 'required');
+                    $('.notetitle').text('开发人员总结');
                     var index = layer.open({
                         type: 1,
-                        title: "提交开发记录",
+                        title: sysdata.status[data.status],
                         area: ['60%', '80%'],
                         shadeClose: true,
                         shade: 0,
                         skin: 'layui-layer-rim',
                         content: $('#addnote'),
-                        cancel: function (index, res) {
-//                            $('#subform').removeClass('layui-btn-disabled');
-//                            $('#subform').removeAttr('disabled'); 
-                        }
+                        cancel: function (index, res) {}
+                    });
+                    break;
+                case 'edittext':
+                    noteval({
+                        editid: data.id
+                        , process_id: data.process_id
+                        , process_name: data.project_name
+                        , status: data.next_step
+                        , develop_id: data.develop_id
+                        , note: data.note
+                    });
+                    $('.detailevent').css({display: 'none'});
+                    $('.addnote').css('display', 'none');
+                    $('.editevent').css({display: 'block'});
+                    $('.notetitle').text('总结内容');
+                    $('.noteitem').attr('lay-verify', '');
+                    var index = layer.open({
+                        type: 1,
+                        title: sysdata.status[data.status],
+                        area: ['60%', '80%'],
+                        shadeClose: true,
+                        shade: 0,
+                        skin: 'layui-layer-rim',
+                        content: $('#addnote'),
+                        cancel: function (index, res) {}
                     });
                     break;
                 case 'detail':
@@ -136,7 +172,7 @@
                         , process_name: data.project_name
                         , over_date: data.over_date
                         , end_date: data.end_date
-                        , status: data.status
+                        , status: data.next_step
                         , develop_id: data.develop_id
                         , note: data.note
                         , remarks: data.remarks
@@ -155,13 +191,37 @@
                         }
                     });
                     break;
+                case 'detailtext':
+                   noteval({
+                         process_id: data.id
+                        , process_name: data.project_name
+                        , status: data.next_step
+                        , develop_id: data.develop_id
+                        , note: data.note
+                    });
+                    $('.detailevent').css({display: 'block'});
+                    $('.editevent').css({display: 'none'});
+                    $('.addnote').css('display', 'none');
+                    $('.notetitle').text('总结内容');
+                    var index = layer.open({
+                        type: 1,
+                        title: "项目下单表详情",
+                        area: ['60%', '80%'],
+                        shadeClose: true,
+                        shade: 0,
+                        skin: 'layui-layer-rim',
+                        content: $('#addnote'),
+                        cancel: function (index, res) {
+                        }
+                    }); 
             }
         });
 
 
         var noteval = function (data) {
             form.val("addnoteform", {
-                 process_id: data.process_id
+                editid: data.editid
+                , process_id: data.process_id
                 , process_name: data.process_name
                 , over_date: data.over_date
                 , end_date: data.end_date

@@ -142,6 +142,8 @@ Route::group(['namespace' => 'Manage'], function(){
         Route::get('detail', 'ProcessController@detail')->name('process.detail');
         Route::get('edit', 'ProcessController@edit')->name('process.edit');
         Route::post('addnote', 'ProcessController@addnote')->name('process.addnote');
+        Route::post('overnote', 'ProcessController@overnote')->name('process.overnote');
+        Route::post('subfinance', 'ProcessController@subfinance')->name('process.subfinance');
         
    });
    

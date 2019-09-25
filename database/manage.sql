@@ -122,6 +122,7 @@ CREATE TABLE `tuomei`.`process_note` (
   `remarks` varchar(510) COMMENT '开发内容',
   `note` varchar(510) COMMENT '总结',
   `step` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '阶段',
+  `next_step` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '下一阶段',
   `type` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '1：开发，2：财务',
   `created_at` DATETIME NULL DEFAULT NULL COMMENT '创建时间' ,
   `updated_at` DATETIME NULL DEFAULT NULL COMMENT '最后修改时间' ,

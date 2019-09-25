@@ -60,7 +60,7 @@
         <label class="layui-form-label" style="width: 160px;"> <em style='color:red;'>*</em> 当前开发进度 </label>
             <div class="layui-input-inline">
                 <select name="status" class="layui-input" lay-search lay-verify="required">
-                <?php foreach (json_decode($data)->status as $k => $v) { ?>
+                <?php foreach (json_decode($data)->develop_status as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
                 <?php } ?>
                 </select>

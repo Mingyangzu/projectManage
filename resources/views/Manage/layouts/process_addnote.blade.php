@@ -8,24 +8,24 @@
                 <input class="layui-input" name="process_name" readonly="true" lay-filter="process_name">
             </div>
         </div>   
-        <div class="layui-form-item">
+        <div class="layui-form-item addnote">
             <label class="layui-form-label" style="width: 160px;"> <em style='color:red;'>*</em> 指定完成日期 </label>
             <div class="layui-input-inline">
-                <input class="layui-input formdate" name="over_date" lay-verify="required" lay-filter="over_date">
+                <input class="layui-input formdate noteitem" name="over_date" lay-verify="required" lay-filter="over_date">
             </div>
             
             <label class="layui-form-label" style="width: 160px;"> <em style='color:red;'>*</em> 实际完成日期 </label>
             <div class="layui-input-inline">
-                <input class="layui-input formdate" name="end_date" lay-verify="required" lay-filter="end_date">
+                <input class="layui-input formdate noteitem" name="end_date" lay-verify="required" lay-filter="end_date">
             </div>
         </div> 
         
         <div class="layui-form-item detailevent">
         <label class="layui-form-label" style="width: 110px;"> <em style='color:red;'>*</em> 下一阶段 </label>
             <div class="layui-input-inline">
-                <select name="status" class="layui-input" lay-verify="required">
+                <select name="status" class="layui-input" lay-verify="required" lay-filter="status">
                 <option value=""></option>
-                <?php foreach (json_decode($data)->status as $k => $v) { ?>
+                <?php foreach (json_decode($data)->develop_status as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
                 <?php } ?>
                 </select>
@@ -33,7 +33,7 @@
             
         <label class="layui-form-label" style="width: 120px;"> 下一执行人 </label>
             <div class="layui-input-inline">
-                <select name="develop_id" class="layui-input" lay-verify="required">
+                <select name="develop_id" id="develop_id" class="layui-input" lay-verify="required">
                 <option value="">执行人</option>
                 <?php foreach (json_decode($data)->adminer as $k => $v) { ?>
                     <option value="<?php echo $k ?>"><?php echo $v ?></option>
@@ -42,13 +42,13 @@
             </div>
         </div> 
 
-        <div class="layui-form-item"> 
+        <div class="layui-form-item addnote"> 
             <div class=""><em style='color:red;'>*</em>开发内容
-                <textarea name="remarks" placeholder="" lay-filter="remarks" class="layui-textarea" lay-verify="required"></textarea>
+                <textarea name="remarks" placeholder="" lay-filter="remarks" class="layui-textarea noteitem" lay-verify="required"></textarea>
             </div>
         </div> 
         <div class="layui-form-item"> 
-            <div class=""><em style='color:red;'>*</em>开发人员总结
+            <div class=""><em style='color:red;'>*</em> <span class="notetitle">开发人员总结</span>
                 <textarea name="note" placeholder="" lay-filter="note" class="layui-textarea" lay-verify="required"></textarea>
             </div>
         </div>
